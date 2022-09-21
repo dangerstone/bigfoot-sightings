@@ -29,6 +29,19 @@ time_words_of_interest = {
     "sunset",
     "daylight",
     "moonlight",
+    ###
+    "river",
+    "lake",
+    "stream",
+    "creek",
+    "forest",
+    "tree",
+    "trees",
+    "wood",
+    "woods",
+    "pine",
+    "clearing",
+    "grove",
 }  # from https://englishstudyonline.org/times-of-day/
 
 weather_words_of_interest = {
@@ -49,6 +62,7 @@ weather_words_of_interest = {
     "wet",
     "overcast",
 }  # from https://www.fluentu.com/blog/english/nature-vocabulary/
+
 
 time_words = []
 weather_words = []
