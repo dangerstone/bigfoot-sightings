@@ -29,7 +29,7 @@ time_words_of_interest = {
     "sunset",
     "daylight",
     "moonlight",
-    ###
+    ##
     "river",
     "lake",
     "stream",
