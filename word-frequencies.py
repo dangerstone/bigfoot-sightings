@@ -88,9 +88,7 @@ def write_counted_words_to_csv_file(words_counted, title):
         # writer.writerows(words_counted)
         # writer.writerows((k,) + v for k, v in words_counted.items())
         for count, reports in words_counted.items():
-            f.write(
-                "{0}, {1}\n".format(count, "".join(", ".join(str(k) for k in reports)))
-            )
+            f.write("{0}, {1}\n".format(count, ", ".join(str(k) for k in reports)))
         # writer = csv.writer(f)
         # writer.writerows(words_counted)
 
