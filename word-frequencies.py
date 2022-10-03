@@ -70,7 +70,9 @@ environment_words_of_interest = {  # NOTE incomplete
 
 def write_counted_words_to_csv_file(words_counted, title):
     with open("data/word-frequencies/" + title, "w", encoding="UTF8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["Word", "Occurrences", "Reports"])
+        writer = csv.DictWriter(
+            f, fieldnames=["Word", "No. of Reports Containing Word", "Reports"]
+        )
         writer.writeheader()
         for word, count_and_reports in sorted(words_counted.items()):
             f.write(
@@ -93,7 +95,10 @@ def clean_word(w):
 def clean_and_append_word(listboi, w, reportno):
     word = clean_word(w)
     if word not in listboi:
-        listboi[word] = (1, [])  # word : count, [reportno, reportno, ...]
+        listboi[word] = (1, [reportno])  # word : count, [reportno, reportno, ...]
+        return
+
+    if reportno in listboi[word][1]:
         return
     beep = listboi[word]
     lst = list(beep)
