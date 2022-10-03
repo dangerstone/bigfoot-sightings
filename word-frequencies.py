@@ -92,24 +92,24 @@ def clean_word(w):
     return w.upper().strip('.,:;()!?"')
 
 
-def clean_and_append_word(listboi, w, reportno):
+def clean_and_append_word(word_dict, w, reportno):
     word = clean_word(w)
-    if word not in listboi:
-        listboi[word] = (1, [reportno])  # word : count, [reportno, reportno, ...]
+    if word not in word_dict:
+        word_dict[word] = (1, [reportno])  # word : count, [reportno, reportno, ...]
         return
 
-    if reportno in listboi[word][1]:
+    if reportno in word_dict[word][1]:
         return
-    beep = listboi[word]
-    lst = list(beep)
-    lst[0] += 1
-    lst[1].append(reportno)
-    listboi[word] = tuple(lst)
+    info_tuple = word_dict[word]
+    info_tuple_as_list = list(info_tuple)
+    info_tuple_as_list[0] += 1
+    info_tuple_as_list[1].append(reportno)
+    word_dict[word] = tuple(info_tuple_as_list)
 
 
-time_words = {}
-weather_words = {}
-environment_words = {}
+time_word_dict = {}
+weather_word_dict = {}
+environment_word_dict = {}
 with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
     reader = csv.reader(csvfile)
     next(reader)
@@ -121,17 +121,21 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
         )  # ignores numbers and uppercases everything # row[0].split(" ")
         for w in csv_words:
             if is_of_interest(w, time_words_of_interest):
-                clean_and_append_word(time_words, w, index)
+                clean_and_append_word(time_word_dict, w, index)
             if is_of_interest(w, weather_words_of_interest):
-                clean_and_append_word(weather_words, w, index)
+                clean_and_append_word(weather_word_dict, w, index)
             if is_of_interest(w, environment_words_of_interest):
-                clean_and_append_word(environment_words, w, index)
+                clean_and_append_word(environment_word_dict, w, index)
 
 print("\n--- TIME-WORDS ---")
-write_counted_words_to_csv_file(time_words, "time-word-frequencies.csv")
+write_counted_words_to_csv_file(time_word_dict, "time-word-frequencies.csv")
 
 print("\n--- WEATHER-WORDS ---")
-write_counted_words_to_csv_file(weather_words, "weather-word-frequencies.csv")
+write_counted_words_to_csv_file(weather_word_dict, "weather-word-frequencies.csv")
 
 print("\n--- ENVIRONMENT-WORDS ---")
-write_counted_words_to_csv_file(environment_words, "environment-word-frequencies.csv")
+write_counted_words_to_csv_file(
+    environment_word_dict, "environment-word-frequencies.csv"
+)
+
+print("\n")
