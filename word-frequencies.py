@@ -52,7 +52,7 @@ weather_words_of_interest = {
 }  # from https://www.fluentu.com/blog/english/nature-vocabulary/
 
 
-environment_words_of_interest = {
+environment_words_of_interest = {  # NOTE incomplete
     "river",
     "lake",
     "stream",
@@ -66,26 +66,6 @@ environment_words_of_interest = {
     "clearing",
     "grove",
 }
-
-time_words = []
-weather_words = []
-environment_words = []
-with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
-    reader = csv.reader(csvfile)
-    next(reader)
-    for index, row in enumerate(reader):
-        if (index % 100) == 0:
-            print("Report no " + index + "...")
-        csv_words = re.findall(
-            r"[^\d\W]+", row[0].lower()
-        )  # ignores numbers and uppercases everything # row[0].split(" ")
-        for w in csv_words:
-            if w in time_words_of_interest:
-                time_words.append(w.upper().strip('.,:;()!?"'))
-            if w in weather_words_of_interest:
-                weather_words.append(w.upper().strip('.,:;()!?"'))
-            if w in environment_words_of_interest:
-                environment_words.append(w.upper().strip('.,:;()!?"'))
 
 
 def count_words(words):
@@ -107,12 +87,47 @@ def write_counted_words_to_csv_file(words_counted, title):
         writer.writerows(words_counted)
 
 
+def is_of_interest(w, words_of_interest):
+    return w in words_of_interest
+
+
+def clean_word(w):
+    return w.upper().strip('.,:;()!?"')
+
+
+def clean_and_append_word(w, listboi):
+    listboi.append(clean_word(w))
+
+
+time_words = []
+weather_words = []
+environment_words = []
+with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader)
+    for index, row in enumerate(reader):
+        if (index % 100) == 0:
+            print("Report no " + str(index) + "...")
+        csv_words = re.findall(
+            r"[^\d\W]+", row[0].lower()
+        )  # ignores numbers and uppercases everything # row[0].split(" ")
+        for w in csv_words:
+            if is_of_interest(w, time_words_of_interest):
+                clean_and_append_word(w, time_words)
+            if is_of_interest(w, weather_words_of_interest):
+                clean_and_append_word(w, weather_words)
+            if is_of_interest(w, environment_words_of_interest):
+                clean_and_append_word(w, environment_words)
+
+
 print("\n--- COUNTING TIME-WORDS ---")
 time_words_counted = count_words(time_words)
 write_counted_words_to_csv_file(time_words_counted, "time-word-frequencies.csv")
+
 print("\n--- COUNTING WEATHER-WORDS ---")
 weather_words_counted = count_words(weather_words)
 write_counted_words_to_csv_file(weather_words_counted, "weather-word-frequencies.csv")
+
 print("\n--- COUNTING ENVIRONMENT-WORDS ---")
 environment_words_counted = count_words(environment_words)
 write_counted_words_to_csv_file(
