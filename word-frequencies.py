@@ -68,29 +68,18 @@ environment_words_of_interest = {  # NOTE incomplete
 }
 
 
-def count_words(words):
-    wordcount = len(words)
-    words_counted = []
-    for index, w in enumerate(words):
-        if (index % 1000) == 0:
-            print(str(index) + " / " + str(wordcount))
-        n = words.count(w)
-        words_counted.append((w, n))
-    words_counted = list(dict.fromkeys(words_counted))
-    words_counted.sort(key=lambda i: (i[1], i[0]), reverse=True)
-    return words_counted
-
-
 def write_counted_words_to_csv_file(words_counted, title):
     with open("data/word-frequencies/" + title, "w", encoding="UTF8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=["Word", "Occurrences", "Reports"])
         writer.writeheader()
-        # writer.writerows(words_counted)
-        # writer.writerows((k,) + v for k, v in words_counted.items())
-        for count, reports in words_counted.items():
-            f.write("{0}, {1}\n".format(count, ", ".join(str(k) for k in reports)))
-        # writer = csv.writer(f)
-        # writer.writerows(words_counted)
+        for word, count_and_reports in sorted(words_counted.items()):
+            f.write(
+                "{0}, {1}, {2}\n".format(
+                    word,
+                    count_and_reports[0],
+                    "; ".join(str(report) for report in count_and_reports[1]),
+                )
+            )
 
 
 def is_of_interest(w, words_of_interest):
@@ -102,7 +91,6 @@ def clean_word(w):
 
 
 def clean_and_append_word(listboi, w, reportno):
-    # listboi.append(clean_word(w))
     word = clean_word(w)
     if word not in listboi:
         listboi[word] = (1, [])  # word : count, [reportno, reportno, ...]
@@ -121,8 +109,8 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
     reader = csv.reader(csvfile)
     next(reader)
     for index, row in enumerate(reader):
-        if (index % 100) == 0:
-            print("Report no " + str(index) + "...")
+        if (index % 500) == 0:
+            print("Counting words in report no " + str(index) + "...")
         csv_words = re.findall(
             r"[^\d\W]+", row[0].lower()
         )  # ignores numbers and uppercases everything # row[0].split(" ")
@@ -134,17 +122,11 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
             if is_of_interest(w, environment_words_of_interest):
                 clean_and_append_word(environment_words, w, index)
 
-print("\n--- COUNTING TIME-WORDS ---")
-# time_words_counted = count_words(time_words)
-# write_counted_words_to_csv_file(time_words_counted, "time-word-frequencies.csv")
+print("\n--- TIME-WORDS ---")
 write_counted_words_to_csv_file(time_words, "time-word-frequencies.csv")
 
-print("\n--- COUNTING WEATHER-WORDS ---")
-# weather_words_counted = count_words(weather_words)
-# write_counted_words_to_csv_file(weather_words_counted, "weather-word-frequencies.csv")
+print("\n--- WEATHER-WORDS ---")
 write_counted_words_to_csv_file(weather_words, "weather-word-frequencies.csv")
 
-print("\n--- COUNTING ENVIRONMENT-WORDS ---")
-# environment_words_counted = count_words(environment_words)
-# write_counted_words_to_csv_file(environment_words_counted, "environment-word-frequencies.csv")
+print("\n--- ENVIRONMENT-WORDS ---")
 write_counted_words_to_csv_file(environment_words, "environment-word-frequencies.csv")
