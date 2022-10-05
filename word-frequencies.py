@@ -140,7 +140,9 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
         )  # ignores numbers and uppercases everything # row[0].split(" ")
         for w in csv_words:
             if is_of_interest(w, time_words_of_interest):
-                clean_and_append_word(time_word_dict, w, index)
+                clean_and_append_word(
+                    time_word_dict, w, index
+                )  # FIXME make it the actual report number and not the index, silly
             if is_of_interest(w, weather_words_of_interest):
                 clean_and_append_word(weather_word_dict, w, index)
             if is_of_interest(w, environment_words_of_interest):
