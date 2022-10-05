@@ -133,6 +133,7 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
     reader = csv.reader(csvfile)
     next(reader)
     for index, row in enumerate(reader):
+        reportno = row[9]
         if (index % 500) == 0:
             print("Counting words in report no " + str(index) + "...")
         csv_words = re.findall(
@@ -140,11 +141,11 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
         )  # ignores numbers and uppercases everything # row[0].split(" ")
         for w in csv_words:
             if is_of_interest(w, time_words_of_interest):
-                clean_and_append_word(time_word_dict, w, row[9])
+                clean_and_append_word(time_word_dict, w, reportno)
             if is_of_interest(w, weather_words_of_interest):
-                clean_and_append_word(weather_word_dict, w, row[9])
+                clean_and_append_word(weather_word_dict, w, reportno)
             if is_of_interest(w, environment_words_of_interest):
-                clean_and_append_word(environment_word_dict, w, row[9])
+                clean_and_append_word(environment_word_dict, w, reportno)
 
 print("\n--- TIME-WORDS ---")
 write_counted_words_to_csv_file(time_word_dict, "time-word-frequencies.csv")
