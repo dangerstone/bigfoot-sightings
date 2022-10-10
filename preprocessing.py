@@ -26,6 +26,29 @@ for col in irrelevant_columns:
 # adding more columns
 df2 = pd.read_json("data/raw/bfro_reports.json", lines=True)
 df = df.join(df2["TIME_AND_CONDITIONS"])
+df = df.rename(columns={"TIME_AND_CONDITIONS": "time_and_conditions"})
+
+
+# reorder columns
+neworder = [
+    "number",
+    "date",
+    "season",
+    "classification",
+    "state",
+    "county",
+    "latitude",
+    "longitude",
+    "temperature_mid",
+    "summary",
+    "visibility",
+    "title",
+    "observed",
+    "location_details",
+    "time_and_conditions",
+]  # print(df.columns)
+df = df.reindex(columns=neworder)
+df = df.rename(columns={"summary": "weather_summary"})
 
 noOfColumns = len(df.columns)
 
