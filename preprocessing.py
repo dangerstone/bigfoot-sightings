@@ -28,6 +28,13 @@ df2 = pd.read_json("data/raw/bfro_reports.json", lines=True)
 df = df.join(df2["TIME_AND_CONDITIONS"])
 df = df.rename(columns={"TIME_AND_CONDITIONS": "time_and_conditions"})
 
+# add ansi columns
+df_ansi = pd.read_csv("data/misc/ansi.csv")
+
+df["state_ansi_code"] = [
+    str(df_ansi.loc[df_ansi["state"] == x, "state_ansi_code"].iat[0]).zfill(2)
+    for x in df["state"]
+]
 
 # reorder columns
 neworder = [
@@ -35,6 +42,7 @@ neworder = [
     "date",
     "season",
     "classification",
+    "state_ansi_code",
     "state",
     "county",
     "latitude",
@@ -52,4 +60,4 @@ df = df.rename(columns={"summary": "weather_summary"})
 
 noOfColumns = len(df.columns)
 
-df.to_csv("data/bfro_reports_geocoded.csv")
+df.to_csv("data/bfro_reports_geocoded.csv", index=False)
