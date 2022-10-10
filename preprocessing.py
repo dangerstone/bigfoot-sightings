@@ -2,8 +2,6 @@ import pandas as pd
 
 df = pd.read_csv("data/raw/bfro_reports_geocoded.csv")
 
-# Removing the irrelevant columns
-
 irrelevant_columns = [
     "cloud_cover",
     "dew_point",
@@ -23,6 +21,11 @@ irrelevant_columns = [
 
 for col in irrelevant_columns:
     df.pop(col)
+
+
+# adding more columns
+df2 = pd.read_json("data/raw/bfro_reports.json")
+df.join(df2["time_and_conditions"])
 
 noOfColumns = len(df.columns)
 
