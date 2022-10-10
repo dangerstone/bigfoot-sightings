@@ -24,8 +24,8 @@ for col in irrelevant_columns:
 
 
 # adding more columns
-df2 = pd.read_json("data/raw/bfro_reports.json")
-df.join(df2["time_and_conditions"])
+df2 = pd.read_json("data/raw/bfro_reports.json", lines=True)
+df = df.join(df2["TIME_AND_CONDITIONS"])
 
 noOfColumns = len(df.columns)
 
