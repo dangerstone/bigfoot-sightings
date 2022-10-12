@@ -132,14 +132,14 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
     reader = csv.reader(csvfile)
     next(reader)
     for index, row in enumerate(reader):
-        reportno = row[0]  # NOTE should match "reportno"-column number
+        reportno = row[0]  # should match "reportno"-column number
         if (index % 500) == 0:
             print("Counting words in report no " + str(index) + "...")
         csv_words = re.findall(
             r"[^\d\W]+",
             (row[13] + " " + row[14] + " " + row[15]).lower(),
         )
-        # NOTE should match "title" + "observed" + "location-details"-column numbers
+        # should match "title" + "observed" + "location-details"-column numbers
         # ignores numbers and uppercases everything
         for w in csv_words:
             if is_of_interest(w, time_words_of_interest):
