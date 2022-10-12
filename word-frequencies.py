@@ -4,7 +4,6 @@ import csv
 from os import environ
 import re
 
-
 import nltk
 from nltk.corpus import stopwords
 
@@ -133,12 +132,12 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
     reader = csv.reader(csvfile)
     next(reader)
     for index, row in enumerate(reader):
-        reportno = row[9]
+        reportno = row[0]
         if (index % 500) == 0:
             print("Counting words in report no " + str(index) + "...")
         csv_words = re.findall(
-            r"[^\d\W]+", row[0].lower()
-        )  # ignores numbers and uppercases everything # row[0].split(" ")
+            r"[^\d\W]+", row[14].lower()
+        )  # ignores numbers and uppercases everything
         for w in csv_words:
             if is_of_interest(w, time_words_of_interest):
                 clean_and_append_word(time_word_dict, w, reportno)
