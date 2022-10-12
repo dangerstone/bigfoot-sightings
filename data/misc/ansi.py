@@ -73,6 +73,8 @@ df["county_ansi_code"] = df["state_ansi_code"].astype(str).str.zfill(2) + df[
 df["state"] = [abbrev_to_us_state[x] for x in df["state_code"]]
 df["state_ansi_code"] = df["state_ansi_code"].astype(str).str.zfill(2)
 
+df["county"] = df["county"].str.replace("Census Area", "County")
+
 df = df.reindex(
     columns=["state_code", "state", "county", "state_ansi_code", "county_ansi_code"]
 )

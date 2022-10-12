@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 df = pd.read_csv("data/raw/bfro_reports_geocoded.csv")
 
@@ -36,15 +37,45 @@ df["state_ansi_code"] = [
     for x in df["state"]
 ]
 
+# print(type(df[["county", "state"]].iat[0]))
+
+"""
+df["county_ansi_code"] = np.where(
+    (df["state"] == df_ansi["state"]) & df["county"] == df_ansi["county"],
+    df_ansi["county_ansi_code"],
+    "",
+)
+"""
+
+
+def getLala(idk):
+    if len(idk) > 0:
+        return str(idk.item()).zfill(5)
+    else:
+        return np.nan
+
+
+df["county_ansi_code"] = [
+    getLala(
+        df_ansi.loc[
+            (df_ansi["county"].str.lower() == county)
+            & (df_ansi["state"].str.lower() == state),
+            "county_ansi_code",
+        ]
+    )
+    for county, state in zip(df["county"].str.lower(), df["state"].str.lower())
+]
+
 # reorder columns
 neworder = [
     "number",
     "date",
     "season",
     "classification",
-    "state_ansi_code",
     "state",
     "county",
+    "state_ansi_code",
+    "county_ansi_code",
     "latitude",
     "longitude",
     "temperature_mid",
