@@ -29,6 +29,27 @@ df2 = pd.read_json("data/raw/bfro_reports.json", lines=True)
 df = df.join(df2["TIME_AND_CONDITIONS"])
 df = df.rename(columns={"TIME_AND_CONDITIONS": "time_and_conditions"})
 
+
+# Dirty, dirty manual renaming of counties, so it matches the "standard" of the ansi-list
+# This is very slow and should be optimised to scale better for larger datasets
+df["county"] = df["county"].str.replace("Valdez-Chitina-Whittier", "Valdez-Cordova")
+df["county"] = df["county"].str.replace("Cordova-McCarthy", "Valdez-Cordova")
+df["county"] = df["county"].str.replace("Matanuska-Susitna", "Anchorage")
+df["county"] = df["county"].str.replace("Etowa", "Etowah")
+df["county"] = df["county"].str.replace("Fredrick", "Frederick")
+df["county"] = df["county"].str.replace("Jeffdavis", "Jeff Davis")
+df["county"] = df["county"].str.replace("City County", "city")
+df["county"] = df["county"].str.replace("La Porte", "LaPorte")
+df["county"] = df["county"].str.replace("Du Page", "DuPage")
+df["county"] = df["county"].str.replace("James city", "James City County")
+df.loc[
+    (df["county"] == "Dade County") & (df["state"] == "Florida"), "county"
+] = "Miami-Dade County"
+df.loc[
+    (df["county"] == "La Salle County") & (df["state"] == "Illinois"), "county"
+] = "LaSalle County"
+
+
 # add ansi columns
 df_ansi = pd.read_csv("data/misc/ansi.csv")
 
@@ -37,18 +58,9 @@ df["state_ansi_code"] = [
     for x in df["state"]
 ]
 
-# print(type(df[["county", "state"]].iat[0]))
-
-"""
-df["county_ansi_code"] = np.where(
-    (df["state"] == df_ansi["state"]) & df["county"] == df_ansi["county"],
-    df_ansi["county_ansi_code"],
-    "",
-)
-"""
-
 
 def getLala(idk):
+    # Safety guard in case no match on the county/state comes up
     if len(idk) > 0:
         return str(idk.item()).zfill(5)
     else:

@@ -74,6 +74,14 @@ df["state"] = [abbrev_to_us_state[x] for x in df["state_code"]]
 df["state_ansi_code"] = df["state_ansi_code"].astype(str).str.zfill(2)
 
 df["county"] = df["county"].str.replace("Census Area", "County")
+df["county"] = df["county"].str.replace("Municipality", "County")
+df["county"] = df["county"].str.replace("Borough", "County")
+
+# Dirty, dirty manual renaming of census divisions etc. that have been combined or similar
+df["county"] = df["county"].str.replace("Prince of Wales-Hyder", "Prince of Wales")
+df["county"] = df["county"].str.replace("Kenai Peninsula", "Kenai-Cook Inlet")
+df["county"] = df["county"].str.replace("Fairbanks North Star", "Fairbanks")
+
 
 df = df.reindex(
     columns=["state_code", "state", "county", "state_ansi_code", "county_ansi_code"]
