@@ -19,7 +19,7 @@
       {
           "name": "state-labels",
           "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
-          "format": {"type": "cvs", "parse": {"STATE": "number","STUSAB": "string","STATE_NAME": "string","STATENS": "number"}}
+          "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
       },
       {
           "name": "sightings",
@@ -45,7 +45,17 @@
           "type": "aggregate", 
                   "groupby": ["state"],
                   "fields": ["number"], "ops": ["count"], "as": ["spots"]
-          }
+          },
+          { "type": "lookup", "from": "state-labels", "key": "state", "fields": ["state"], "values": ["id"]}, 
+          { "type": "filter", "expr": "datum.state != null" }
+        ]
+      },
+      {
+        "name": "state-sightings",
+        "url": "https://vega.github.io/editor/data/us-10m.json",
+        "format": {"type": "topojson", "feature": "states"},
+        "transform": [
+          { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
         ]
       }
   ],
@@ -54,8 +64,14 @@
     "name": "color",
     "type": "ordinal",
     "domain": {"data": "sightings", "field": "classification"},
-    "range": {"scheme": "greens"},
+    "range": {"scheme": "teals"},
     "reverse": true
+  },
+  {
+    "name": "sightings",
+    "type": "quantize",
+    "domain": [0, 500],
+    "range": {"scheme": "greens", "count": 100}
   }
   ],
   "projections": [
@@ -64,7 +80,7 @@
           "type": "albersUsa",
           "scale": 1200,
           "translate": [{"signal": "width / 2"}, {"signal": "height / 2"}]
-        }
+      }
   ],
   "marks": [
       {
@@ -81,6 +97,22 @@
             },
           "hover": { "fill": {"value": "hotpink"} }
           }
+      },
+      {
+        "type": "shape",
+        "from": {"data": "state-sightings"},
+        "encode": {
+          "enter": { "tooltip": {"signal": "datum.spots"}},
+          "update": { 
+            "fill": {"scale": "sightings", "field": "spots"}, 
+            "stroke": {"value": "grey"},
+            "strokeWidth": {"value": 0.25} 
+          },
+          "hover": { "fill": {"value": "hotpink"} }
+        },
+        "transform": [
+          { "type": "geoshape", "projection": "projection" }
+        ]
       },
       {
         "type": "symbol",
@@ -103,18 +135,6 @@
   
           }
         }
-      },
-      {
-        "type": "shape",
-        "from": {"data": "spots"},
-        "encode": {
-          "enter": { "tooltip": {"signal": "format(datum.rate, '0.1%')"}},
-          "update": { "fill": {"scale": "color", "field": "rate"} },
-          "hover": { "fill": {"value": "purple"} }
-        },
-        "transform": [
-          { "type": "geoshape", "projection": "projection" }
-        ]
       }    
     ]
   }
