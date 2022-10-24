@@ -18,7 +18,7 @@
       },
       {
           "name": "state-labels",
-          "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
+          "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
           "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
       },
       {

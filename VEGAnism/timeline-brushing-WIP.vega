@@ -10,7 +10,7 @@
       {"name": "brush_store"},
       {
         "name": "source_0",
-        "url": "https://query.data.world/s/l242yrwnlgxboj6j7btsjkfckvoudy.csv",
+        "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
         "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
         "transform": [
           {
