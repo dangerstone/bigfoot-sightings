@@ -1,0 +1,9 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "data": {"url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv"},
+    "mark": "bar",
+    "encoding": {
+      "x": {"timeUnit": "month", "field": "date", "type": "temporal"},
+      "y": {"aggregate": "count", "field": "classification"}
+    }
+  }

@@ -1,0 +1,110 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "width": 600,
+    "height": 200,
+    "padding": 5,
+  
+    "signals": [
+      {
+        "name": "interpolate",
+        "value": "monotone",
+        "bind": {
+          "input": "select",
+          "options": [
+            "basis",
+            "cardinal",
+            "catmull-rom",
+            "linear",
+            "monotone",
+            "natural",
+            "step",
+            "step-after",
+            "step-before"
+          ]
+        }
+      }
+    ],
+  
+    "data": [
+      {"name": "brush_store"},
+      {
+        "name": "sightings",
+        "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
+        "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
+      "transform": [
+          {
+            "type": "filter",
+            "expr": "datum.date != null"
+          }, 
+          {
+            "type": "filter",
+            "expr": "datum.date >= 0"
+          },
+          {
+            "type": "timeunit", 
+            "field": "date", 
+            "units": ["year", "month"], 
+            "step": 12
+          }, 
+          {
+            "type": "aggregate", 
+                    "groupby": ["unit0"],
+                    "fields": ["number"], "ops": ["count"], "as": ["spots"]
+          }, 
+          {
+            "type": "collect",
+            "sort": {"field": "unit0"}
+          } 
+        ]
+      }
+    ],
+  
+    "scales": [
+      {
+        "name": "xscale",
+        "type": "time",
+        "range": "width",
+        "domain": {"data": "sightings", "field": "unit0"}
+      },
+      {
+        "name": "yscale",
+        "type": "linear",
+        "range": "height",
+        "nice": true,
+        "zero": true,
+        "domain": {"data": "sightings", "field": "spots"}
+      }
+    ],
+  
+    "axes": [
+      {"orient": "bottom", "scale": "xscale"},
+      {"orient": "left", "scale": "yscale"}
+    ],
+  
+    "marks": [
+      {
+        "type": "area",
+        "style": ["area", "errorband-band"],
+        "from": {"data": "sightings"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "unit0"},
+            "x2": {"scale": "xscale", "value": 0},
+            "y": {"scale": "yscale", "field": "spots"},
+            "y2": {"scale": "yscale", "value": 0},
+            "fill": {"value": "steelblue"}
+          },
+          "update": {
+            "interpolate": {"signal": "interpolate"},
+            "fillOpacity": {"value": 1},
+            "tooltip": {
+              "signal": "{'Year': timeFormat(datum.unit0, '%Y'), 'sightings': datum.spots}"
+            }
+          },
+          "hover": {
+            "fillOpacity": {"value": 0.5}
+          }
+        }
+      }
+    ]
+  }
