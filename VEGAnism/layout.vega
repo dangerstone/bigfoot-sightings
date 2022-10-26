@@ -1,0 +1,99 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "height": 600,
+    "width": 1200,
+    "padding": 5,
+
+    "title": {
+      "text": "Bigfoot Sightings in North America",
+      "encode": {
+        "title": {
+          "enter": {
+            "fill": {"value": "darkgreen"},
+            "fontSize": {"value": 25}
+          }
+        }
+      }
+    },
+    "data": [
+    ],
+    "signals": [
+    ],
+    "scales": [
+    ],
+
+    "marks": [
+      {
+        "type": "group",
+        "name": "map-graph",
+        "style": "cell",
+        "align": "left",
+        "encode": {
+          "update": {
+            "x": {"value": 1},
+            "y": {"value": 1}, 
+            "width": {"value": 700},
+            "height": {"value": 400}
+          }
+        },
+        "title": {
+          "text": "Map of sightings",
+          "frame": "group"
+        }
+      },
+      {
+        "type": "group",
+        "name": "timeline-graph",
+        "style": "cell",
+        "align": "left",
+        "encode": {
+          "update": {
+            "x": {"value": 1},
+            "y": {"value": 450},
+            "width": {"value": 700},
+            "height": {"value": 100}
+          }
+        },
+        "title": {
+          "text": "Timeline of sightings",
+          "frame": "group"
+        }
+      },
+      {
+        "type": "group",
+        "name": "monthly-graph",
+        "style": "cell",
+        "align": "right",
+        "encode": {
+          "update": {
+            "x": {"value": 750},
+            "y": {"value": 1},
+            "width": {"value": 300},
+            "height": {"value": 250}
+          }
+        },
+        "title": {
+          "text": "Monthly distribution of sightings",
+          "frame": "group"
+        }
+      },
+      {
+        "type": "group",
+        "name": "keywords-graph",
+        "style": "cell",
+        "align": "right",
+        "encode": {
+          "update": {
+            "x": {"value": 750},
+            "y": {"value": 300},
+            "width": {"value": 300},
+            "height": {"value": 250}
+          }
+        },
+        "title": {
+          "text": "Distribution of sightings based on select keywords",
+          "frame": "group"
+        }
+      }
+    ]
+  }
