@@ -16,6 +16,7 @@ irrelevant_columns = [
     "temperature_high",
     "temperature_low",
     "uv_index",
+    "visibility",
     "wind_bearing",
     "wind_speed",
 ]
@@ -92,7 +93,6 @@ neworder = [
     "longitude",
     "temperature_mid",
     "summary",
-    "visibility",
     "title",
     "observed",
     "location_details",
@@ -100,7 +100,5 @@ neworder = [
 ]  # print(df.columns)
 df = df.reindex(columns=neworder)
 df = df.rename(columns={"summary": "weather_summary"})
-
-noOfColumns = len(df.columns)
 
 df.to_csv("data/bfro_reports_geocoded.csv", index=False)
