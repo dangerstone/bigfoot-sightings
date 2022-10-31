@@ -1,0 +1,169 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "background": "white",
+  "padding": 5,
+  "width": 225,
+  "height": 225,
+  "style": "cell",
+  "data": [
+    {"name": "highlight_store"},
+    {"name": "select_store"},
+    {
+      "name": "source_0",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
+      "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
+      "transform": [
+        {"type": "identifier", "as": "_vgsid_"},
+        {
+          "field": "date",
+          "type": "timeunit",
+          "units": ["month"],
+          "as": ["month_date", "month_date_end"]
+        },
+        {
+          "type": "aggregate",
+          "groupby": ["month_date", "month_date_end"],
+          "ops": ["count"],
+          "fields": [null],
+          "as": ["__count"]
+        },
+        {"type": "identifier", "as": "_vgsid_"},
+        {
+          "type": "filter",
+          "expr": "(isDate(datum[\"month_date\"]) || (isValid(datum[\"month_date\"]) && isFinite(+datum[\"month_date\"])))"
+        },
+        {
+          "type": "collect",
+          "sort": {"field": "month_date"}
+        },
+        {"type": "pie"}
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "name": "unit",
+      "value": {},
+      "on": [
+        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+      ]
+    },
+    {
+      "name": "highlight",
+      "update": "vlSelectionResolve(\"highlight_store\", \"union\", true, true)"
+    },
+    {
+      "name": "select",
+      "update": "vlSelectionResolve(\"select_store\", \"union\", true, true)"
+    },
+    {
+      "name": "highlight_tuple",
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "mouseover"}],
+          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: highlight_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"_vgsid_\"]]} : null",
+          "force": true
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+      ]
+    },
+    {
+      "name": "highlight_tuple_fields",
+      "value": [{"type": "E", "field": "_vgsid_"}]
+    },
+    {
+      "name": "highlight_toggle",
+      "value": false,
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "mouseover"}],
+          "update": "event.shiftKey"
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+      ]
+    },
+    {
+      "name": "highlight_modify",
+      "on": [
+        {
+          "events": {"signal": "highlight_tuple"},
+          "update": "modify(\"highlight_store\", highlight_toggle ? null : highlight_tuple, highlight_toggle ? null : true, highlight_toggle ? highlight_tuple : null)"
+        }
+      ]
+    },
+    {
+      "name": "select_tuple",
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "click"}],
+          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"_vgsid_\"]]} : null",
+          "force": true
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+      ]
+    },
+    {
+      "name": "select_tuple_fields",
+      "value": [{"type": "E", "field": "_vgsid_"}]
+    },
+    {
+      "name": "select_toggle",
+      "value": false,
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "click"}],
+          "update": "event.shiftKey"
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+      ]
+    },
+    {
+      "name": "select_modify",
+      "on": [
+        {
+          "events": {"signal": "select_tuple"},
+          "update": "modify(\"select_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+    "type": "arc",
+    "from": {"data": "source_0"},
+    "encode": {
+      "enter": {
+        "x": {"field": {"group": "width"}, "mult": 0.5},
+        "y": {"field": {"group": "height"}, "mult": 0.5},
+        "startAngle": {"field": "startAngle"},
+        "endAngle": {"field": "endAngle"},
+        "innerRadius": {"value": 50},
+        "outerRadius": {"scale": "r", "field": "__count"},
+        "stroke": {"value": "#fff"}
+      },
+      "update": {
+        "fill": {"scale": "color", "field": "__count"}
+      },
+      "hover": {
+        "fill": {"value": "red"}
+      }
+    }
+  }
+  ],
+  "scales": [
+    {
+    "name": "r",
+    "type": "linear",
+    "domain": {"data": "source_0", "field": "__count"},
+    "zero": true,
+    "range": [50, 250]
+    },
+    {
+    "name": "color",
+    "type": "ordinal",
+    "domain": {"data": "source_0", "field": "__count"},
+    "range": ["lightblue","lightblue", "lightgreen", "lightgreen", "lightgreen", "green", "green", "green", "orange", "orange", "orange", "lightblue"], 
+    "reverse": false
+    }
+  ]
+}
