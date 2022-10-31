@@ -12,23 +12,22 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words("english"))  # {"", "I", "ABOUT"}
 
 time_words_of_interest = {
-    "dusk",
-    "dawn",
-    "morning",
-    "evening",
-    "night",
     "afternoon",
-    "midnight",
-    "midday",
+    "dawn",
+    "day",
     "daytime",
+    "dusk",
+    "evening",
+    "midnight",
+    "morning",
+    "midday",
+    "night",
     "nighttime",
     "noon",
-    "twilight",
     "sunrise",
     "sunup",
     "sunset",
-    "daylight",
-    "moonlight",
+    # "twilight",
 }  # from https://englishstudyonline.org/times-of-day/
 
 weather_words_of_interest = {
