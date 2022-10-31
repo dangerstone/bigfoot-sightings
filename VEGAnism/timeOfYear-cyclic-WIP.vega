@@ -4,16 +4,26 @@
   "padding": 5,
   "width": 225,
   "height": 225,
-  "style": "cell",
   "data": [
     {"name": "highlight_store"},
     {"name": "select_store"},
     {
       "name": "source_0",
       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
-      "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
+      "format": {"type": "csv", "parse": {
+        "observed": "string",
+        "location_details": "string",
+        "county": "string",
+        "state": "string",
+        "season": "string",
+        "title": "string",
+        "latitude": "number",
+        "longitude": "number",
+        "date": "date",
+        "number": "number",
+        "classification": "string"
+      }, "delimiter": ","},
       "transform": [
-        {"type": "identifier", "as": "_vgsid_"},
         {
           "field": "date",
           "type": "timeunit",
@@ -36,7 +46,12 @@
           "type": "collect",
           "sort": {"field": "month_date"}
         },
-        {"type": "pie"}
+        {"type": "pie"},
+        {"type": "formula", "expr": "datetime(datum.month_date_end)", "as": "convertedDate"},
+      {
+        "type": "formula", "expr": "utcFormat(datum.month_date_end,'%b')",
+        "as": "month"
+      }
       ]
     }
   ],
@@ -139,13 +154,40 @@
         "endAngle": {"field": "endAngle"},
         "innerRadius": {"value": 50},
         "outerRadius": {"scale": "r", "field": "__count"},
-        "stroke": {"value": "#fff"}
+        "stroke": {"value": "#fff"}, 
+        "tooltip": {
+          "signal": "datum.__count"
+        }
       },
       "update": {
-        "fill": {"scale": "color", "field": "__count"}
+        "fill": {"scale": "color", "field": "__count"}, 
+        "fillOpacity": [
+              {
+                "test": "!length(data(\"select_store\")) || vlSelectionTest(\"select_store\", datum)",
+                "value": 1
+              },
+              {"value": 0.3}
+            ]
       },
       "hover": {
-        "fill": {"value": "red"}
+        "fillOpacity": {"value": 0.5}
+      }
+    }
+  }, 
+
+  {
+    "type": "text",
+    "from": {"data": "source_0"},
+    "encode": {
+      "enter": {
+        "x": {"field": {"group": "width"}, "mult": 0.5},
+        "y": {"field": {"group": "height"}, "mult": 0.5},
+        "radius": {"scale": "r", "field": "__count", "offset": 15},
+        "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
+        "fill": {"value": "#000"},
+        "align": {"value": "center"},
+        "baseline": {"value": "middle"},
+        "text": {"field": "month"}
       }
     }
   }
@@ -156,13 +198,13 @@
     "type": "linear",
     "domain": {"data": "source_0", "field": "__count"},
     "zero": true,
-    "range": [50, 250]
+    "range": [50, 200]
     },
     {
     "name": "color",
     "type": "ordinal",
     "domain": {"data": "source_0", "field": "__count"},
-    "range": ["lightblue","lightblue", "lightgreen", "lightgreen", "lightgreen", "green", "green", "green", "orange", "orange", "orange", "lightblue"], 
+    "range": ["steelblue","steelblue", "green", "green", "green", "gold", "gold", "gold","#d45b12", "#d45b12", "#d45b12", "steelblue"], 
     "reverse": false
     }
   ]
