@@ -12,21 +12,22 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words("english"))  # {"", "I", "ABOUT"}
 
 time_words_of_interest = {
-    "afternoon",
-    "dawn",
-    "day",
-    "daytime",
-    "dusk",
-    "evening",
-    "midnight",
-    "morning",
-    "midday",
-    "night",
-    "nighttime",
-    "noon",
-    "sunrise",
-    "sunup",
-    "sunset",
+    "midday": 0,
+    "noon": 0,
+    "afternoon": 1,
+    "evening": 2,
+    "sunset": 3,
+    "sundown": 3,
+    "dusk": 4,
+    "night": 5,
+    "midnight": 6,
+    "nighttime": 7,
+    "dawn": 8,
+    "sunrise": 9,
+    "sunup": 9,
+    "morning": 10,
+    "day": 11,
+    "daytime": 12,
     # "twilight",
 }  # from https://englishstudyonline.org/times-of-day/
 
@@ -88,15 +89,16 @@ environment_words_of_interest = {  # NOTE incomplete
 def write_counted_words_to_csv_file(words_counted, title):
     with open("data/word-frequencies/" + title, "w", encoding="UTF8", newline="") as f:
         writer = csv.DictWriter(
-            f, fieldnames=["word", "no_of_reports_containing_word", "reports"]
+            f, fieldnames=["word", "id", "no_of_reports_containing_word", "reports"]
         )
         writer.writeheader()
-        for word, count_and_reports in sorted(words_counted.items()):
+        for word, id_count_and_reports in sorted(words_counted.items()):
             f.write(
-                "{0}, {1}, {2}\n".format(
+                "{0}, {1}, {2}, {3}\n".format(
                     word,
-                    count_and_reports[0],
-                    "; ".join(str(report) for report in count_and_reports[1]),
+                    id_count_and_reports[0],
+                    id_count_and_reports[1],
+                    "; ".join(str(report) for report in id_count_and_reports[2]),
                 )
             )
 
@@ -106,21 +108,25 @@ def is_of_interest(w, words_of_interest):
 
 
 def clean_word(w):
-    return w.upper().strip('.,:;()!?"')
+    return w.lower().strip('.,:;()!?"')
 
 
 def clean_and_append_word(word_dict, w, reportno):
     word = clean_word(w)
     if word not in word_dict:
-        word_dict[word] = (1, [reportno])  # word : count, [reportno, reportno, ...]
+        word_dict[word] = (
+            time_words_of_interest[word],
+            1,
+            [reportno],
+        )  # word : id, count, [reportno, reportno, ...]
         return
 
-    if reportno in word_dict[word][1]:
+    if reportno in word_dict[word][2]:
         return
     info_tuple = word_dict[word]
     info_tuple_as_list = list(info_tuple)
-    info_tuple_as_list[0] += 1
-    info_tuple_as_list[1].append(reportno)
+    info_tuple_as_list[1] += 1
+    info_tuple_as_list[2].append(reportno)
     word_dict[word] = tuple(info_tuple_as_list)
 
 
@@ -141,12 +147,12 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
         # should match "title" + "observed" + "location-details"-column numbers
         # ignores numbers and uppercases everything
         for w in csv_words:
-            if is_of_interest(w, time_words_of_interest):
+            if is_of_interest(w, time_words_of_interest.keys()):
                 clean_and_append_word(time_word_dict, w, reportno)
-            if is_of_interest(w, weather_words_of_interest):
-                clean_and_append_word(weather_word_dict, w, reportno)
-            if is_of_interest(w, environment_words_of_interest):
-                clean_and_append_word(environment_word_dict, w, reportno)
+            # if is_of_interest(w, weather_words_of_interest):
+            # clean_and_append_word(weather_word_dict, w, reportno)
+            # if is_of_interest(w, environment_words_of_interest):
+            # clean_and_append_word(environment_word_dict, w, reportno)
 
 print("\n--- TIME-WORDS ---")
 write_counted_words_to_csv_file(time_word_dict, "time-word-frequencies.csv")
