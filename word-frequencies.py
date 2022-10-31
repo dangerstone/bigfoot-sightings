@@ -89,7 +89,7 @@ environment_words_of_interest = {  # NOTE incomplete
 def write_counted_words_to_csv_file(words_counted, title):
     with open("data/word-frequencies/" + title, "w", encoding="UTF8", newline="") as f:
         writer = csv.DictWriter(
-            f, fieldnames=["Word", "No. of Reports Containing Word", "Reports"]
+            f, fieldnames=["word", "no_of_reports_containing_word", "reports"]
         )
         writer.writeheader()
         for word, count_and_reports in sorted(words_counted.items()):
