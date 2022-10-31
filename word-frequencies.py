@@ -92,7 +92,7 @@ def write_counted_words_to_csv_file(words_counted, title):
             f, fieldnames=["word", "id", "no_of_reports_containing_word", "reports"]
         )
         writer.writeheader()
-        for word, id_count_and_reports in sorted(words_counted.items()):
+        for word, id_count_and_reports in words_counted.items():
             f.write(
                 "{0}, {1}, {2}, {3}\n".format(
                     word,
@@ -130,6 +130,30 @@ def clean_and_append_word(word_dict, w, reportno):
     word_dict[word] = tuple(info_tuple_as_list)
 
 
+def tidy_dict(word_dict):
+    # sort by id: word_dict = sorted(word_dict.items(), key=lambda item: item[1][0])
+    word_dict_copy1 = dict(word_dict)
+    word_dict_copy2 = dict(word_dict)
+    print(type(word_dict_copy1))
+    for word1, id_count_reports1 in word_dict_copy1.items():
+        id1 = id_count_reports1[0]
+        count1 = id_count_reports1[1]
+        reports1 = id_count_reports1[2]
+        for word2, id_count_reports2 in word_dict_copy2.items():
+            id2 = id_count_reports2[0]
+            count2 = id_count_reports2[1]
+            reports2 = id_count_reports2[2]
+            if id1 == id2 and word1 < word2:
+                word_dict[(word1 + "/" + word2)] = (
+                    id1,
+                    count1 + count2,
+                    reports1 + list(set(reports2) - set(reports1)),
+                )
+                del word_dict[word1]
+                del word_dict[word2]
+    return word_dict
+
+
 time_word_dict = {}
 weather_word_dict = {}
 environment_word_dict = {}
@@ -153,6 +177,8 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
             # clean_and_append_word(weather_word_dict, w, reportno)
             # if is_of_interest(w, environment_words_of_interest):
             # clean_and_append_word(environment_word_dict, w, reportno)
+
+time_word_dict = tidy_dict(time_word_dict)
 
 print("\n--- TIME-WORDS ---")
 write_counted_words_to_csv_file(time_word_dict, "time-word-frequencies.csv")
