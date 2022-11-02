@@ -1,19 +1,24 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "Radial plot depicting the occurrence of word pertaining to time of day of the bigfoot sighting.",
-  "width": 200,
+  "width": 200, 
   "height": 200,
 
   "data": [
     {
       "name": "source",
       // "values": [12, 23, 47, 6, 52, 19],
-       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/word-frequencies/time-word-frequencies.csv",
+       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
       "format": {"type": "csv", "delimiter": ",", "parse": {"no_of_reports_containing_word": "number", "id": "number"}},
       "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]//, "field": "no_of_reports_containing_word"}]
     }
   ],
-
+  "mark": {"type": "image", "width": 50, "height": 50},
+  "encoding": {
+    "x": {"field": "x", "type": "quantitative"},
+    "y": {"field": "y", "type": "quantitative"},
+    "url": {"field": "img", "type": "nominal"}
+  },
   "scales": [
     {
       "name": "r",
@@ -26,7 +31,7 @@
     "name": "color",
     "type": "ordinal",
     "domain": {"data": "source", "field": "id"},
-    "range": ["yellow","gold","orange","#d45b12","purple","darkblue","midnightblue","darkblue", "purple","#d45b12","orange","gold","gold"], 
+    "range": ["yellow","gold","orange","#d45b12","purple","darkblue","midnightblue","purple","#d45b12","orange","gold","gold"], 
     "reverse": false
     }
   ],

@@ -144,7 +144,7 @@ def tidy_dict(word_dict):
             count2 = id_count_reports2[1]
             reports2 = id_count_reports2[2]
             if id1 == id2 and word1 < word2:
-                word_dict[(word1 + "/" + word2)] = (
+                word_dict[word1] = (  # [(word1 + "/" + word2)] = (
                     id1,
                     count1 + count2,
                     reports1 + list(set(reports2) - set(reports1)),
