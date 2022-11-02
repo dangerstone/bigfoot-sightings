@@ -149,7 +149,7 @@ def tidy_dict(word_dict):
                     count1 + count2,
                     reports1 + list(set(reports2) - set(reports1)),
                 )
-                del word_dict[word1]
+                # del word_dict[word1]
                 del word_dict[word2]
     return word_dict
 
