@@ -1,0 +1,176 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Radial plot depicting the occurrence of word pertaining to time of day of the bigfoot sighting.",
+  "width": 200, 
+  "height": 200,
+
+  "data": [
+    {"name": "highlight_store"},
+    {"name": "select_store"},
+    {
+      "name": "source",
+      // "values": [12, 23, 47, 6, 52, 19],
+       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
+      "format": {"type": "csv", "delimiter": ",", "parse": {"no_of_reports_containing_word": "number", "id": "number"}},
+      "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]//, "field": "no_of_reports_containing_word"}]
+    }
+  ],
+  "mark": {"type": "image", "width": 50, "height": 50},
+  "encoding": {
+    "x": {"field": "x", "type": "quantitative"},
+    "y": {"field": "y", "type": "quantitative"},
+    "url": {"field": "img", "type": "nominal"}
+  },
+  "scales": [
+    {
+      "name": "r",
+      "type": "sqrt", // linear
+      "domain": {"data": "source", "field": "no_of_reports_containing_word"}, 
+      "zero": true,
+      "range": [60, 200]
+    },
+    {
+    "name": "color",
+    "type": "ordinal",
+    "domain": {"data": "source", "field": "id"},
+    "range": ["darkgreen"], 
+    "reverse": false
+    }
+  ],
+  "signals": [
+    /*{
+      "name": "unit",
+      "value": {},
+      "on": [
+        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
+      ]
+    },*/
+    {
+      "name": "highlight",
+      "update": "vlSelectionResolve(\"highlight_store\", \"union\", true, true)"
+    },
+    {
+      "name": "select",
+      "update": "vlSelectionResolve(\"select_store\", \"union\", true, true)"
+    },
+    {
+      "name": "highlight_tuple",
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "mouseover"}],
+          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: highlight_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"word\"]]} : null",
+          "force": true
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+      ]
+    },
+    {
+      "name": "highlight_tuple_fields",
+      "value": [{"type": "E", "field": "word"}]
+    },
+    {
+      "name": "highlight_toggle",
+      "value": false,
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "mouseover"}],
+          "update": "event.shiftKey"
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+      ]
+    },
+    {
+      "name": "highlight_modify",
+      "on": [
+        {
+          "events": {"signal": "highlight_tuple"},
+          "update": "modify(\"highlight_store\", highlight_toggle ? null : highlight_tuple, highlight_toggle ? null : true, highlight_toggle ? highlight_tuple : null)"
+        }
+      ]
+    },
+    {
+      "name": "select_tuple",
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "click"}],
+          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"reports\"]]} : null",
+          "force": true
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+      ]
+    },
+    {
+      "name": "select_tuple_fields",
+      "value": [{"type": "E", "field": "reports"}]
+    },
+    {
+      "name": "select_toggle",
+      "value": false,
+      "on": [
+        {
+          "events": [{"source": "scope", "type": "click"}],
+          "update": "event.shiftKey"
+        },
+        {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+      ]
+    },
+    {
+      "name": "select_modify",
+      "on": [
+        {
+          "events": {"signal": "select_tuple"},
+          "update": "modify(\"select_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+        }
+      ]
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "arc",
+      "from": {"data": "source"},
+      "encode": {
+        "enter": {
+          "x": {"field": {"group": "width"}, "mult": 0.5},
+          "y": {"field": {"group": "height"}, "mult": 0.5},
+          "startAngle": {"field": "startAngle"},
+          "endAngle": {"field": "endAngle"},
+          "innerRadius": {"value": 20},
+          "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
+          "stroke": {"value": "#fff"}
+        },
+        "update": {
+        "fill": {"scale": "color", "field": "id"}, 
+        "fillOpacity": [
+              {
+                "test": "!length(data(\"select_store\")) || vlSelectionTest(\"select_store\", datum)",
+                "value": 1
+              },
+              {"value": 0.3}
+            ]
+      },
+        "hover": {
+        "fillOpacity": {"value": 0.5}
+        }
+      }
+    },
+
+    {
+      "type": "text",
+      "from": {"data": "source"},
+      "encode": {
+        "enter": {
+          "x": {"field": {"group": "width"}, "mult": 0.5},
+          "y": {"field": {"group": "height"}, "mult": 0.5},
+          "radius": {"scale": "r", "field": "no_of_reports_containing_word", "offset": 24},
+
+          "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
+          "fill": {"value": "#000"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "text": {"field": "word"}
+        }
+      }
+    }
+  ]
+}
