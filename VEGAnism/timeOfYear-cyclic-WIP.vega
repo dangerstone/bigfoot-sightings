@@ -204,7 +204,7 @@
     "name": "color",
     "type": "ordinal",
     "domain": {"data": "source_0", "field": "__count"},
-    "range": ["darkgreen"], 
+    "range": ["green"], 
     "reverse": false
     }
   ]
