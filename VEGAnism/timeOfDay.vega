@@ -140,17 +140,24 @@
           "tooltip": {"signal": "datum.no_of_reports_containing_word"}
         },
         "update": {
-        "fill": {"scale": "color", "field": "id"}, 
+        "fill": [
+            {"test": "!length(data(\"select_store\")) || vlSelectionTest(\"select_store\", datum)", 
+            "scale": "color", 
+            "field": "id"}, 
+            {"value": "grey"}], 
         "fillOpacity": [
               {
                 "test": "!length(data(\"select_store\")) || vlSelectionTest(\"select_store\", datum)",
                 "value": 1
               },
-              {"value": 0.3}
+              { "value": 0.3}
             ]
       },
         "hover": {
-        "fillOpacity": {"value": 0.5}
+        "fillOpacity": [
+              { "test": "!length(data(\"select_store\")) || vlSelectionTest(\"select_store\", datum)", "value": 0.3}
+            ],
+            "fill":{"value": "#134504"}
         }
       }
     },
