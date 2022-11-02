@@ -884,8 +884,10 @@
           }
         },
         "title": {
-          "text": "Distribution of sightings based on select keywords",
-          "frame": "group"
+          "text": "Sightings based on select time-of-day keywords",
+          "frame": "group",
+          "subtitleFontSize": 6,
+          "subtitle": ["Keywords are found by analysing reports and may not accurately indicate which times of the day sightings occur"]
         }
       }
     ]

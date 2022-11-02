@@ -204,7 +204,7 @@
     "name": "color",
     "type": "ordinal",
     "domain": {"data": "source_0", "field": "__count"},
-    "range": ["steelblue","steelblue", "green", "green", "green", "gold", "gold", "gold","#d45b12", "#d45b12", "#d45b12", "steelblue"], 
+    "range": ["darkgreen"], 
     "reverse": false
     }
   ]
