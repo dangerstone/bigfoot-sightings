@@ -8,10 +8,9 @@
     {"name": "select_store"},
     {
       "name": "source",
-      // "values": [12, 23, 47, 6, 52, 19],
        "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
       "format": {"type": "csv", "delimiter": ",", "parse": {"no_of_reports_containing_word": "number", "id": "number"}},
-      "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]//, "field": "no_of_reports_containing_word"}]
+      "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]
     }
   ],
   "encoding": {
@@ -22,7 +21,7 @@
   "scales": [
     {
       "name": "r",
-      "type": "sqrt", // linear
+      "type": "sqrt", 
       "domain": {"data": "source", "field": "no_of_reports_containing_word"}, 
       "zero": true,
       "range": [10, 200]
@@ -109,7 +108,6 @@
       },
         "hover": {
         "fillOpacity": [
-            // if the hovered over point is in select_store, desaturate (signifies deselection)
               { "test": "vlSelectionTest(\"select_store\", datum)", "value": 0.3} 
             ],
             "fill":{"value": "#134504"}
