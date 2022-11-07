@@ -5,7 +5,6 @@
   "height": 200,
 
   "data": [
-    {"name": "highlight_store"},
     {"name": "select_store"},
     {
       "name": "source",
@@ -26,7 +25,7 @@
       "type": "sqrt", // linear
       "domain": {"data": "source", "field": "no_of_reports_containing_word"}, 
       "zero": true,
-      "range": [60, 200]
+      "range": [10, 200]
     },
     {
     "name": "color",
@@ -37,55 +36,13 @@
     }
   ],
   "signals": [
-    /*{
-      "name": "unit",
-      "value": {},
-      "on": [
-        {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
-      ]
-    },*/
-    {
-      "name": "highlight",
-      "update": "vlSelectionResolve(\"highlight_store\", \"union\", true, true)"
-    },
     {
       "name": "select",
       "update": "vlSelectionResolve(\"select_store\", \"union\", true, true)"
     },
     {
-      "name": "highlight_tuple",
-      "on": [
-        {
-          "events": [{"source": "scope", "type": "mouseover"}],
-          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: highlight_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"word\"]]} : null",
-          "force": true
-        },
-        {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
-      ]
-    },
-    {
-      "name": "highlight_tuple_fields",
-      "value": [{"type": "E", "field": "word"}]
-    },
-    {
-      "name": "highlight_toggle",
-      "value": false,
-      "on": [
-        {
-          "events": [{"source": "scope", "type": "mouseover"}],
-          "update": "event.shiftKey"
-        },
-        {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
-      ]
-    },
-    {
-      "name": "highlight_modify",
-      "on": [
-        {
-          "events": {"signal": "highlight_tuple"},
-          "update": "modify(\"highlight_store\", highlight_toggle ? null : highlight_tuple, highlight_toggle ? null : true, highlight_toggle ? highlight_tuple : null)"
-        }
-      ]
+      "name": "select_tuple_fields",
+      "value": [{"type": "E", "field": "reports"}]
     },
     {
       "name": "select_tuple",
@@ -99,16 +56,13 @@
       ]
     },
     {
-      "name": "select_tuple_fields",
-      "value": [{"type": "E", "field": "reports"}]
-    },
-    {
       "name": "select_toggle",
-      "value": false,
+      "value":  false,
       "on": [
         {
           "events": [{"source": "scope", "type": "click"}],
-          "update": "event.shiftKey"
+          "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"reports\"]]} : null",
+          "force": false
         },
         {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
       ]
@@ -134,7 +88,7 @@
           "y": {"field": {"group": "height"}, "mult": 0.5},
           "startAngle": {"field": "startAngle"},
           "endAngle": {"field": "endAngle"},
-          "innerRadius": {"value": 20},
+          "innerRadius": {"value": 10},
           "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
           "stroke": {"value": "#fff"},
           "tooltip": {"signal": "datum.no_of_reports_containing_word"}
@@ -155,7 +109,8 @@
       },
         "hover": {
         "fillOpacity": [
-              { "test": "!length(data(\"select_store\")) || vlSelectionTest(\"select_store\", datum)", "value": 0.3}
+            // if the hovered over point is in select_store, desaturate (signifies deselection)
+              { "test": "vlSelectionTest(\"select_store\", datum)", "value": 0.3} 
             ],
             "fill":{"value": "#134504"}
         }
