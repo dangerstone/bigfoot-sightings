@@ -166,7 +166,7 @@ with open("data/bfro_reports_geocoded.csv", "r") as csvfile:
             print("Counting words in report no " + str(index) + "...")
         csv_words = re.findall(
             r"[^\d\W]+",
-            (row[13] + " " + row[14] + " " + row[15]).lower(),
+            (row[14] + " " + row[15] + " " + row[16]).lower(),
         )
         # should match "title" + "observed" + "location-details"-column numbers
         # ignores numbers and uppercases everything
