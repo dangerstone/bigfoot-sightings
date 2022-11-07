@@ -19,6 +19,7 @@
       {"name": "timeline_brush_store"},
       {"name": "month_brush_store"},
       {"name": "tod_brush_store"},
+      {"name": "state_brush_store"},
       {
         "name": "data_source",
         "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
@@ -207,7 +208,7 @@
                 "name": "color",
                 "type": "ordinal",
                 "domain": {"data": "sightings", "field": "classification"},
-                "range": {"scheme": "teals"},
+                "range": {"scheme": "browns"},
                 "reverse": true
             },
             {
@@ -215,6 +216,12 @@
                 "type": "quantize",
                 "domain": [0, 300],
                 "range": {"scheme": "greens", "count": 300}
+            },
+            {
+                "name": "deselected-sightings",
+                "type": "quantize",
+                "domain": [0, 300],
+                "range": {"scheme": "greys", "count": 300}
             }
         ],
         "projections": [
@@ -227,59 +234,108 @@
         ],
         "marks": [
             {
-                "type": "path",
-                "from": {"data": "states"},
-                "encode": {
+              "type": "path",
+              "from": {"data": "states"},
+              "encode": {
                 "enter": {
                     "fill": {"value": "#dedede"},
                     "stroke": {"value": "#dedede"}
                 },
                 "update": {
                     "path": {"field": "path"},
-                    "fill": {"value": "white"}
-                },
-                "hover": { "stroke": {"value": "#d45b12"} }
+                    "stroke": {"value": "#dedede"}
                 }
+                }
+               
             },
             {
-            "type": "shape",
-            "from": {"data": "state-sightings"},
-            "encode": {
+              "type": "shape",
+              "from": {"data": "state-sightings"},
+              "encode": {
                 "enter": { "tooltip": {"signal": "datum.spots"}},
                 "update": { 
-                "fill": {"scale": "sightings", "field": "spots"}, 
-                "stroke": {"value": "grey"},
-                "strokeWidth": {"value": 0.25},
-                "tooltip": {"signal": "datum.spots"}
+                  "fill": [
+                    {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
+                    {"scale": "deselected-sightings", "field": "spots"}], 
+                  /*"fillOpacity": [ {"test": "length(data(\"state_brush_store\")) !== 0 || !vlSelectionTest(\"state_brush_store\", datum)", "value": 0.5 },
+                    {"value": 1}
+                  ],*/
+                  "stroke": {"value": "grey"},
+                  "strokeWidth": {"value": 0.25},
+                  "tooltip": {"signal": "datum.spots"}
                 },
-                "hover": { "stroke": {"value": "white"}, "strokeWidth": {"value": 5} }
-            },
-            "transform": [
+                "hover": {
+                  "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "deselected-sightings", "field": "spots" },
+                    {"value": "#134504"}
+                  ]
+                }
+              },
+              "transform": [
                 { "type": "geoshape", "projection": "projection" }
-            ]
+              ]
             },
             {
-            "type": "symbol",
-            "from": {"data": "sightings"},
-            "encode": {
+              "type": "symbol",
+              "from": {"data": "sightings"},
+              "encode": {
                 "enter": {
                 "size": {"value": 16},
                 "fill": {"scale": "color", "field": "classification"},
                 "fillOpacity": {"value": 0.5},
                 "strokeWidth": {"value": 1}, 
                 "tooltip": {
-                    "signal": "{'title': datum.title, 'Classification': datum.classification, 'Season': datum.season, 'County': datum.county}"
+                  "signal": "{'title': datum.title, 'Classification': datum.classification, 'Season': datum.season, 'County': datum.county}"
                     }
                 },
                 "update": {
-                "x": {"field": "x"},
-                "y": {"field": "y"}
+                  "x": {"field": "x"},
+                  "y": {"field": "y"}
                 }, 
-                "hover": {
-        
-                }
+                "hover": { }
             }
-            }    
+          }    
+        ],
+        "signals": [
+          {
+            "name" : "select",
+            "update": "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)"
+          },
+          {
+            "name": "select_tuple_fields",
+            "value": [{"type": "E", "field": "id"}]
+          },
+          {
+            "name": "select_tuple",
+            "on": [
+              {
+                "events": [{"source": "scope", "type": "click"}],
+                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"id\"]]} : null",
+                "force": true
+              },
+              {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+            ]
+          },
+          {
+            "name": "select_toggle",
+            "value":  false,
+            "on": [
+              {
+                "events": [{"source": "scope", "type": "click"}],
+                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"id\"]]} : null",
+                "force": false
+              },
+              {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+            ]
+          },
+          {
+            "name": "select_modify",
+            "on": [
+              {
+                "events": {"signal": "select_tuple"},
+                "update": "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+              }
+            ]
+          }
         ]
       },
       {
