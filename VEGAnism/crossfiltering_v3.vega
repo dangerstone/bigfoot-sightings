@@ -232,7 +232,7 @@
                     "path": {"field": "path"},
                     "fill": {"value": "white"}
                 },
-                "hover": { "fill": {"value": "#d45b12"} }
+                "hover": { "stroke": {"value": "#d45b12"} }
                 }
             },
             {
@@ -246,7 +246,7 @@
                 "strokeWidth": {"value": 0.25},
                 "tooltip": {"signal": "datum.spots"}
                 },
-                "hover": { "fill": {"value": "#d45b12"} }
+                "hover": { "stroke": {"value": "white"}, "strokeWidth": {"value": 5} }
             },
             "transform": [
                 { "type": "geoshape", "projection": "projection" }
