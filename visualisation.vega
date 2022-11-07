@@ -788,52 +788,20 @@
         "data": [
           
         ],
-        "signals": [
+        "scales": [
           {
-            "name": "unit",
-            "value": {},
-            "on": [
-              {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
-            ]
+          "name": "r",
+          "type": "linear",
+          "domain": {"data": "source_0", "field": "__count"},
+          "zero": true,
+          "range": [25, 150]
           },
           {
-            "name": "select",
-            "update": "vlSelectionResolve(\"month_brush_store\", \"union\", true, true)"
-          },
-          {
-            "name": "select_tuple",
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
-                "force": true
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
-            ]
-          },
-          {
-            "name": "select_tuple_fields",
-            "value": [{"type": "E", "field": "month"}]
-          },
-          {
-            "name": "select_toggle",
-            "value": false,
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "event.shiftKey"
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
-            ]
-          },
-          {
-            "name": "select_modify",
-            "on": [
-              {
-                "events": {"signal": "select_tuple"},
-                "update": "modify(\"month_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
-              }
-            ]
+          "name": "color",
+          "type": "ordinal",
+          "domain": {"data": "source_0", "field": "__count"},
+          "range": ["green"], 
+          "reverse": false
           }
         ],
         "marks": [
@@ -867,16 +835,26 @@
               "fill": [
                 {
                   "test": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)",
-                  "scale": "color", "field": "__count"
+                  "scale": "color", 
+                  "field": "__count"
                 },
-                {"value": "lightgrey"}]
+                {"value": "grey"}],
+                "fillOpacity": [
+                  {
+                    "test": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)", 
+                    "value": 1
+                  },
+                  {"value": 0.3}
+                ]
             },
             "hover": {
-              "fill": {"value": "darkgreen"}
-            }
+                "fillOpacity": [
+                      { "test": "vlSelectionTest(\"month_brush_store\", datum)", "value": 0.3} 
+                    ],
+                    "fill":{"value": "#134504"}
+              }
           }
-        }, 
-
+          }, 
         {
           "type": "text",
           "from": {"data": "source_0"},
@@ -897,20 +875,46 @@
           }
         }
         ],
-        "scales": [
+        "signals": [
           {
-          "name": "r",
-          "type": "linear",
-          "domain": {"data": "source_0", "field": "__count"},
-          "zero": true,
-          "range": [25, 150]
+            "name": "select",
+            "update": "vlSelectionResolve(\"month_brush_store\", \"union\", true, true)"
           },
           {
-          "name": "color",
-          "type": "ordinal",
-          "domain": {"data": "source_0", "field": "__count"},
-          "range": ["green"], 
-          "reverse": false
+            "name": "select_tuple_fields",
+            "value": [{"type": "E", "field": "month"}]
+          },
+          {
+            "name": "select_tuple",
+            "on": [
+              {
+                "events": [{"source": "scope", "type": "click"}],
+                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
+                "force": true
+              },
+              {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+            ]
+          },
+          {
+            "name": "select_toggle",
+            "value":  false,
+            "on": [
+              {
+                "events": [{"source": "scope", "type": "click"}],
+                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
+                "force": false
+              },
+              {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+            ]
+          },
+          {
+            "name": "select_modify",
+            "on": [
+              {
+                "events": {"signal": "select_tuple"},
+                "update": "modify(\"month_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+              }
+            ]
           }
         ]
       },
