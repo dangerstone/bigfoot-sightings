@@ -214,8 +214,9 @@
             {
                 "name": "sightings",
                 "type": "quantize",
-                "domain": [0, 300],
-                "range": {"scheme": "greens", "count": 300}
+                "domain": [0, 600],
+                "range": {"scheme": "yellowgreen", "count": 50}//,
+                //"reverse": true
             },
             {
                 "name": "deselected-sightings",
@@ -257,17 +258,21 @@
                   "fill": [
                     {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
                     {"scale": "deselected-sightings", "field": "spots"}], 
-                  /*"fillOpacity": [ {"test": "length(data(\"state_brush_store\")) !== 0 || !vlSelectionTest(\"state_brush_store\", datum)", "value": 0.5 },
-                    {"value": 1}
-                  ],*/
+                  "fillOpacity": [ {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
+                    {"value": 0.5}
+                  ],
                   "stroke": {"value": "grey"},
                   "strokeWidth": {"value": 0.25},
                   "tooltip": {"signal": "datum.spots"}
                 },
                 "hover": {
-                  "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "deselected-sightings", "field": "spots" },
-                    {"value": "#134504"}
-                  ]
+                  "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots" },
+                  {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
+                    {"scale": "sightings", "field": "spots"}
+                  ],
+                  "fillOpacity": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
+                    {"value": 1}]
+                  
                 }
               },
               "transform": [
