@@ -139,6 +139,71 @@
         {"type": "identifier", "as": "_vgsid_"}, 
         {"type": "pie"}
       ]
+    },
+    {
+      "name": "states",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "states"},
+      "transform": [
+        {
+          "type": "geopath",
+          "projection": "projection"
+        }
+      ]
+    },
+    {
+      "name": "state-labels",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
+      "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
+    },
+    {
+      "name": "sightings", 
+      "source": "brushed_data_for_states",//"brushed_data",
+      "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
+      "transform": [
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": ["longitude", "latitude"]
+        },
+        {
+          "type": "filter",
+          "expr": "datum.x != null && datum.y != null"
+        }/*,
+        {
+          "type": "project", "fields":["state_ansi_code"], "as": ["id"]
+        }*/
+      ]
+    }, 
+    {
+      "name": "spots",
+      "source": ["sightings", "states"],
+      "transform": [
+        {
+          "type": "aggregate", 
+          "groupby": ["state"],
+          "fields": ["number"], "ops": ["count"], "as": ["spots"]
+        },
+        { "type": "lookup", "from": "state-labels", "key": "state", "fields": ["state"], "values": ["id"]}, 
+        { "type": "filter", "expr": "datum.state != null" }
+      ]
+    },
+    {
+      "name": "state-sightings",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "states"},
+      "transform": [
+        { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
+      ]
+    }
+  ],
+  
+  "projections": [
+    {
+      "name": "projection",
+      "type": "albersUsa",
+      "scale": {"signal": "map_scale"},
+      "translate": [{"signal": "map_width / 2"}, {"signal": "map_height / 2"}]
     }
   ],
   "signals": [
@@ -171,64 +236,7 @@
         "text": "Map of sightings",
         "frame": "group"
       },
-      "data": [
-        {
-            "name": "states",
-            "url": "https://vega.github.io/editor/data/us-10m.json",
-            "format": {"type": "topojson", "feature": "states"},
-            "transform": [
-                {
-                  "type": "geopath",
-                  "projection": "projection"
-                }
-              ]
-        },
-        {
-            "name": "state-labels",
-            "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
-            "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
-        },
-        {
-            "name": "sightings", 
-            "source": "brushed_data_for_states",//"brushed_data",
-            "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
-            "transform": [
-                {
-                  "type": "geopoint",
-                  "projection": "projection",
-                  "fields": ["longitude", "latitude"]
-                },
-                {
-                  "type": "filter",
-                  "expr": "datum.x != null && datum.y != null"
-                }/*,
-                {
-                  "type": "project", "fields":["state_ansi_code"], "as": ["id"]
-                }*/
-              ]
-        }, 
-        {
-          "name": "spots",
-          "source": ["sightings", "states"],
-          "transform": [
-            {
-            "type": "aggregate", 
-                    "groupby": ["state"],
-                    "fields": ["number"], "ops": ["count"], "as": ["spots"]
-            },
-            { "type": "lookup", "from": "state-labels", "key": "state", "fields": ["state"], "values": ["id"]}, 
-            { "type": "filter", "expr": "datum.state != null" }
-          ]
-        },
-        {
-          "name": "state-sightings",
-          "url": "https://vega.github.io/editor/data/us-10m.json",
-          "format": {"type": "topojson", "feature": "states"},
-          "transform": [
-            { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
-          ]
-        }
-      ],
+      "data": [        ],
       "scales": [
           {
               "name": "color",
@@ -252,12 +260,6 @@
           }
       ],
       "projections": [
-          {
-              "name": "projection",
-              "type": "albersUsa",
-              "scale": {"signal": "map_scale"},
-              "translate": [{"signal": "map_width / 2"}, {"signal": "map_height / 2"}]
-          }
       ],
       "marks": [
           {
