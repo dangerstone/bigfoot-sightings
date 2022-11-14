@@ -158,7 +158,7 @@
     },
     {
       "name": "sightings", 
-      "source": "brushed_data_for_states",//"brushed_data",
+      "source": "brushed_data_for_states", // "brushed_data",
       "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
       "transform": [
         {
@@ -194,6 +194,10 @@
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
         { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
+        ,
+        {
+          "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "state_ansi_code", "properties", "geometry", "spots"]
+        }
       ]
     }
   ],
@@ -237,6 +241,7 @@
         "frame": "group"
       },
       "data": [        ],
+      "projections": [        ],
       "scales": [
           {
               "name": "color",
@@ -259,8 +264,6 @@
               "range": {"scheme": "greys", "count": 300}
           }
       ],
-      "projections": [
-      ],
       "marks": [
           {
             "type": "path",
@@ -274,8 +277,7 @@
                   "path": {"field": "path"},
                   "stroke": {"value": "#dedede"}
               }
-              }
-             
+            } 
           },
           {
             "type": "shape",
@@ -344,7 +346,7 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"id\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": true
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
@@ -356,7 +358,7 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"id\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": false
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
