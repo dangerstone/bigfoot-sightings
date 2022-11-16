@@ -288,6 +288,7 @@
               },
               "update": { 
                 "fill": [
+                  {"test": "datum.spots === 0", "value": "#ededed"}, 
                   {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
                   {"scale": "deselected-sightings", "field": "spots"}], 
                 "fillOpacity": [ {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
