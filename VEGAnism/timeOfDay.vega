@@ -13,11 +13,6 @@
       "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]
     }
   ],
-  "encoding": {
-    "x": {"field": "x", "type": "quantitative"},
-    "y": {"field": "y", "type": "quantitative"},
-    "url": {"field": "img", "type": "nominal"}
-  },
   "scales": [
     {
       "name": "r",

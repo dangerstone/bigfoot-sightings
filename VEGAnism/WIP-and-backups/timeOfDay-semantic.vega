@@ -1,0 +1,79 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Radial plot depicting the occurrence of word pertaining to time of day of the bigfoot sighting.",
+  "width": 200, 
+  "height": 200,
+
+  "data": [
+    {
+      "name": "source",
+      // "values": [12, 23, 47, 6, 52, 19],
+       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
+      "format": {"type": "csv", "delimiter": ",", "parse": {"no_of_reports_containing_word": "number", "id": "number"}},
+      "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]//, "field": "no_of_reports_containing_word"}]
+    }
+  ],
+  "mark": {"type": "image", "width": 50, "height": 50},
+  "encoding": {
+    "x": {"field": "x", "type": "quantitative"},
+    "y": {"field": "y", "type": "quantitative"},
+    "url": {"field": "img", "type": "nominal"}
+  },
+  "scales": [
+    {
+      "name": "r",
+      "type": "sqrt", // linear
+      "domain": {"data": "source", "field": "no_of_reports_containing_word"}, 
+      "zero": true,
+      "range": [60, 200]
+    },
+    {
+    "name": "color",
+    "type": "ordinal",
+    "domain": {"data": "source", "field": "id"},
+    "range": ["yellow","gold","orange","#d45b12","purple","darkblue","midnightblue","purple","#d45b12","orange","gold","gold"], 
+    "reverse": false
+    }
+  ],
+
+  "marks": [
+    {
+      "type": "arc",
+      "from": {"data": "source"},
+      "encode": {
+        "enter": {
+          "x": {"field": {"group": "width"}, "mult": 0.5},
+          "y": {"field": {"group": "height"}, "mult": 0.5},
+          "startAngle": {"field": "startAngle"},
+          "endAngle": {"field": "endAngle"},
+          "innerRadius": {"value": 20},
+          "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
+          "stroke": {"value": "#fff"}
+        },
+        "update": {
+          "fill": {"scale": "color", "field": "id"}
+        },
+        "hover": {
+          "fill": {"value": "red"}
+        }
+      }
+    },
+
+    {
+      "type": "text",
+      "from": {"data": "source"},
+      "encode": {
+        "enter": {
+          "x": {"field": {"group": "width"}, "mult": 0.5},
+          "y": {"field": {"group": "height"}, "mult": 0.5},
+          "radius": {"scale": "r", "field": "no_of_reports_containing_word", "offset": 8},
+          "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
+          "fill": {"value": "#000"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"},
+          "text": {"field": "word"}
+        }
+      }
+    }
+  ]
+}
