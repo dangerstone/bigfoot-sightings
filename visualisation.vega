@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "height": 1000,
-  "width": 1500,
+  "width": 1800,
   "padding": 5,
 
   "title": {
@@ -16,6 +16,7 @@
     }
   },
   "data": [
+    
     {"name": "state_brush_store"},
     {"name": "timeline_brush_store"},
     {"name": "month_brush_store"},
@@ -28,6 +29,30 @@
         }
       }
     },
+
+    {
+      "name": "classification-store",
+      "source": "data_source", 
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "if(Class_A_selected==false,datum.classification != 'Class A',datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "if(Class_B_selected==false,datum.classification != 'Class B',datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "if(Class_C_selected==false,datum.classification != 'Class C',datum)"
+        }
+        /*, 
+        {
+          "type": "collect",
+          "sort": {"field": "classification"}
+        }*/
+      ]
+    },
     {
       "name": "tod-source",
       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
@@ -36,7 +61,7 @@
     },
     {
       "name": "brushed_data",
-      "source": "data_source",
+      "source": "classification-store",
       "transform": [
         {
           "type": "filter",
@@ -59,7 +84,7 @@
   
     {
       "name": "brushed_data_for_states",
-      "source": "data_source",
+      "source": "classification-store",
       "transform": [
         {
           "type": "filter",
@@ -74,7 +99,7 @@
 
     {
       "name": "brushed_data_for_timeline",
-      "source": "data_source",
+      "source": "classification-store",
       "transform": [
         {
           "type": "filter",
@@ -89,7 +114,7 @@
 
     {
       "name": "brushed_data_for_monthly",
-      "source": "data_source",
+      "source": "classification-store",
       "transform": [
         {
           "type": "filter",
@@ -169,6 +194,10 @@
         {
           "type": "filter",
           "expr": "datum.x != null && datum.y != null"
+        }, 
+        {
+          "type": "collect",
+          "sort": {"field": "classification"}
         }/*,
         {
           "type": "project", "fields":["state_ansi_code"], "as": ["id"]
@@ -211,6 +240,21 @@
     }
   ],
   "signals": [
+    {
+      "name": "Class_A_selected", 
+      "value": true, 
+      "bind": {"input": "checkbox"}
+    },
+    {
+      "name": "Class_B_selected", 
+      "value": true, 
+      "bind": {"input": "checkbox"}
+    },
+    {
+      "name": "Class_C_selected", 
+      "value": true, 
+      "bind": {"input": "checkbox"}
+    },
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
     {"name": "map_scale", "value": 1600},
@@ -218,11 +262,27 @@
     {"name": "timeline_width", "value": 1400},
     {"name": "monthly_height", "value": 500},
     {"name": "monthly_width", "value": 500}
+    
+
   ],
   "scales": [
   ],
 
   "marks": [
+    {
+      "type": "group",
+      "name": "toolbar",
+      "style": "cell",
+      "align": "left",
+      "encode": {
+        "update": {
+          "x": {"value": 1},
+          "y": {"value": 1}, 
+          "width": {"signal": "map_width"},
+          "height": {"value": 50}
+        }
+      }
+    },
     {
       "type": "group",
       "name": "map-graph",
@@ -247,7 +307,7 @@
               "name": "color",
               "type": "ordinal",
               "domain": {"data": "sightings", "field": "classification"},
-              "range": {"scheme": "browns"},
+              "range": {"scheme": "blues"},
               "reverse": true
           },
           {
@@ -262,6 +322,18 @@
               "type": "quantize",
               "domain": [0, 300],
               "range": {"scheme": "greys", "count": 300}
+          }, 
+          {
+            "name": "size",
+            "type": "point",
+            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "range": [50, 25]
+          },
+          {
+            "name": "shape",
+            "type": "ordinal",
+            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "range": ["circle", "diamond", "triangle"]
           }
       ],
       "marks": [
@@ -314,20 +386,24 @@
           },
           {
             "type": "symbol",
+            "style": ["point"],
             "from": {"data": "sightings"},
             "encode": {
               "enter": {
-              "size": {"value": 16},
-              "fill": {"scale": "color", "field": "classification"},
-              "fillOpacity": {"value": 0.5},
-              "strokeWidth": {"value": 1}, 
+              // "size": {"value": 10},
+              
               "tooltip": {
-                "signal": "{'title': datum.title, 'Classification': datum.classification, 'Season': datum.season, 'County': datum.county}"
+                "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
                   }
               },
               "update": {
+                "fill": {"scale": "color", "field": "classification"},
+                "fillOpacity": {"value": 0.7},
+                // "strokeWidth": {"value": 1}, 
                 "x": {"field": "x"},
-                "y": {"field": "y"}
+                "y": {"field": "y"},
+                "size": {"scale": "size", "field": "classification"},
+                "shape": {"scale": "shape", "field": "classification"}
               }, 
               "hover": { }
           }
@@ -396,7 +472,7 @@
 
         "data": [
           {"name": "timeline_data_raw", 
-          "source": "data_source",
+          "source": "classification-store",
           "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
             "transform": [
               {
