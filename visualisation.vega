@@ -226,6 +226,13 @@
         ,
         {
           "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "state_ansi_code", "properties", "geometry", "spots"]
+        }, 
+        {
+          "type": "collect",
+          "sort": {
+            "field": ["spots"],
+            "order": ["descending"]
+          }
         }
       ]
     }
@@ -313,7 +320,7 @@
           {
               "name": "sightings",
               "type": "quantize",
-              "domain": [0, 550],
+              "domain": {"data": "state-sightings", "field": "spots"},//[0, 550],
               "range": {"scheme": "yellowgreen", "count": 50}//,
               //"reverse": true
           },
