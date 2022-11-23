@@ -18,6 +18,7 @@
   "data": [
     
     {"name": "state_brush_store"},
+    {"name": "county_brush_store"},
     {"name": "timeline_brush_store"},
     {"name": "month_brush_store"},
     {"name": "tod_brush_store"},
@@ -65,7 +66,8 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)"
+          // "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
         },
         {
           "type": "filter",
@@ -107,7 +109,8 @@
         },
         {
           "type": "filter",
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)"
+          // "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
         }
       ]
     },
@@ -122,7 +125,8 @@
         },
         {
           "type": "filter",
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)"
+          // "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
         }
       ]
     },  
@@ -413,28 +417,37 @@
             "type": "shape",
             "from": {"data": "county-sightings"},
             "encode": {
-              "enter": { 
+              /*"enter": { 
                 "tooltip": {"signal": "datum.spots"}
-              },
+              },*/
               "update": { 
                 "fill": [
                   {"test": "datum.spots === 0", "value": "#ededed"}, 
-                  {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
+                  {"test": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
+                  // {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
                   {"scale": "deselected-sightings", "field": "spots"}], 
-                "fillOpacity": [ {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
+                "fillOpacity": [ 
+                  {"test": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)", "value": 1 },
+                  //{"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
                   {"value": 0.5}
                 ],
                 "stroke": {"value": "grey"},
                 "strokeWidth": {"value": 0.25},
-                "tooltip": {"signal": "{'title': datum.county, 'sightings': datum.spots}"}
+                "tooltip": {"signal": "{'title': datum.county, 'Sightings': datum.spots}"}
               },
               "hover": {
-                "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots" },
-                {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
+                "fill": [ 
+                  {"test": "vlSelectionTest(\"county_brush_store\", datum)", "scale": "sightings", "field": "spots" },
+                  // {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots" },
+                  {"test": "!length(data(\"county_brush_store\"))", "value": "#134504" },
+                  // {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
                   {"scale": "sightings", "field": "spots"}
                 ],
-                "fillOpacity": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
-                  {"value": 1}]
+                "fillOpacity": [ 
+                  {"test": "vlSelectionTest(\"county_brush_store\", datum)", "value": 0.3 },
+                  // {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
+                  {"value": 1}
+                ]
                 
               }
             },
@@ -470,18 +483,18 @@
       "signals": [
         {
           "name" : "select",
-          "update": "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)"
+          "update": "vlSelectionResolve(\"county_brush_store\", \"union\", true, true)"// "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)"
         },
         {
           "name": "select_tuple_fields",
-          "value": [{"type": "E", "field": "state_ansi_code"}]
+          "value": [{"type": "E", "field":"county_ansi_code"}] // "state_ansi_code"}]
         },
         {
           "name": "select_tuple",
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null",// "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": true
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
@@ -493,7 +506,7 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": false
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
@@ -504,7 +517,7 @@
           "on": [
             {
               "events": {"signal": "select_tuple"},
-              "update": "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+              "update": "modify(\"county_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)" // "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
             }
           ]
         }
