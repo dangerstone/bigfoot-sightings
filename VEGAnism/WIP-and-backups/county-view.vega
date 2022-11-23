@@ -309,6 +309,10 @@
       "value": true, 
       "bind": {"input": "checkbox"}
     },
+    {
+      "name": "Map view", "value": "states",
+      "bind": {"input": "radio", "options": ["states", "counties"]}
+    },
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
     {"name": "map_scale", "value": 1600},
