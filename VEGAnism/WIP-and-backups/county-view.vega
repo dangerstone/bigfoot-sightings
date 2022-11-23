@@ -274,7 +274,7 @@
     
     "transform": [
         { "type": "lookup", "from": "county_spots", "key": "county_ansi_code", "fields": ["id"], "values": ["spots"], "default": 0},
-        { "type": "lookup", "from": "county_spots", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
+        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
         { "type": "project", "fields":["type", "id", "properties", "geometry", "spots", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "spots", "county"] }
       ]
     }
