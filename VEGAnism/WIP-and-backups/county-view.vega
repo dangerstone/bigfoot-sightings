@@ -1,626 +1,714 @@
 {
-    "$schema": "https://vega.github.io/schema/vega/v5.json",
-    "height": 1000,
-    "width": 1800,
-    "padding": 5,
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "height": 1000,
+  "width": 1800,
+  "padding": 5,
 
-    "title": {
-      "text": "Bigfoot Sightings in North America",
-      "encode": {
-        "title": {
-          "enter": {
-            "fill": {"value": "darkgreen"},
-            "fontSize": {"value": 25}
-          }
+  "title": {
+    "text": "Bigfoot Sightings in North America",
+    "encode": {
+      "title": {
+        "enter": {
+          "fill": {"value": "darkgreen"},
+          "fontSize": {"value": 25}
+        }
+      }
+    }
+  },
+  "data": [
+    
+    {"name": "state_brush_store"},
+    {"name": "timeline_brush_store"},
+    {"name": "month_brush_store"},
+    {"name": "tod_brush_store"},
+    {
+      "name": "data_source",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
+      "format": {
+        "type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "county_ansi_code": "number", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string", "month": "number"
         }
       }
     },
-    "data": [
-      
-      {"name": "state_brush_store"},
-      {"name": "timeline_brush_store"},
-      {"name": "month_brush_store"},
-      {"name": "tod_brush_store"},
-      {
-        "name": "data_source",
-        "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
-        "format": {
-          "type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string", "month": "number", "county_ansi_code": "number"
-          }
+
+    {
+      "name": "classification-store",
+      "source": "data_source", 
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "if(Class_A_selected==false,datum.classification != 'Class A',datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "if(Class_B_selected==false,datum.classification != 'Class B',datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "if(Class_C_selected==false,datum.classification != 'Class C',datum)"
+        }
+        /*, 
+        {
+          "type": "collect",
+          "sort": {"field": "classification"}
+        }*/
+      ]
+    },
+    {
+      "name": "tod-source",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
+      "format": {"type": "csv", "delimiter": ",", "parse": {"no_of_reports_containing_word": "number", "id": "number"}},
+      "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]
+    },
+    {
+      "name": "brushed_data",
+      "source": "classification-store",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)"
+        }/*,
+        {
+          "type": "filter",
+          "expr": "!length(data(\"tod_brush_store\")) || vlSelectionTest(\"tod_brush_store\", datum)"
+        }*/
+      ]
+    },
+  
+    {
+      "name": "brushed_data_for_states",
+      "source": "classification-store",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)"
+        }
+      ]
+    },
+
+    {
+      "name": "brushed_data_for_timeline",
+      "source": "classification-store",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+        }
+      ]
+    },
+
+    {
+      "name": "brushed_data_for_monthly",
+      "source": "classification-store",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
+        },
+        {
+          "type": "filter",
+          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+        }
+      ]
+    },  
+
+    {"name": "highlight_store"}, // delete?
+    {
+      "name": "source_0",
+      "source": "brushed_data_for_monthly",
+      "format": {"type": "csv", "parse": {
+        "observed": "string",
+        "location_details": "string",
+        "county": "string",
+        "state": "string",
+        "season": "string",
+        "title": "string",
+        "latitude": "number",
+        "longitude": "number",
+        "date": "date",
+        "number": "number",
+        "classification": "string", 
+        "month": "number"
+      }, "delimiter": ","},
+      "transform": [
+                  {
+          "type": "filter",
+          "expr": "datum.date != null"
+        },
+        {
+          "type": "aggregate",
+          "groupby": ["month"],
+          "ops": ["count"],
+          "fields": [null],
+          "as": ["__count"]
+        },
+        {
+          "type": "collect",
+          "sort": {"field": "month"}
+        },
+        {"type": "identifier", "as": "_vgsid_"}, 
+        {"type": "pie"}
+      ]
+    },
+    {
+      "name": "states",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "states"},
+      "transform": [
+        {
+          "type": "geopath",
+          "projection": "projection"
+        }
+      ]
+    },
+    {
+      "name": "state-labels",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
+      "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
+    },
+    {
+      "name": "ansi",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/main/data/misc/ansi.csv",
+      "format": {"type": "csv", "parse": {"state_ansi_code": "number", "county_ansi_code": "number"}}
+    },
+    {
+      "name": "sightings", 
+      "source": "brushed_data_for_states", // "brushed_data",
+      "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "county_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
+      "transform": [
+        {
+          "type": "geopoint",
+          "projection": "projection",
+          "fields": ["longitude", "latitude"]
+        },
+        {
+          "type": "filter",
+          "expr": "datum.x != null && datum.y != null"
+        }, 
+        {
+          "type": "collect",
+          "sort": {"field": "classification"}
+        }/*,
+        {
+          "type": "project", "fields":["state_ansi_code"], "as": ["id"]
+        }*/
+      ]
+    }, 
+    {
+      "name": "spots",
+      "source": ["sightings", "states"],
+      "transform": [
+        {
+          "type": "aggregate", 
+          "groupby": ["state"],
+          "fields": ["number"], "ops": ["count"], "as": ["spots"]
+        },
+        { "type": "lookup", "from": "state-labels", "key": "state", "fields": ["state"], "values": ["id"]}, 
+        { "type": "filter", "expr": "datum.state != null" }
+      ]
+    },
+    {
+      "name": "state-sightings",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "states"},
+      "transform": [
+        { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
+        ,
+        {
+          "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "state_ansi_code", "properties", "geometry", "spots"]
+        }
+      ]
+    },
+
+
+
+
+
+    {
+      "name": "counties",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "counties"},
+      "transform": [
+        {
+          "type": "geopath",
+          "projection": "projection"
+        }
+      ]
+    },
+
+    {
+      "name": "county_spots",
+      "source": ["sightings", "counties"],
+      "transform": [
+        {
+          "type": "aggregate", 
+          "groupby": ["county_ansi_code"],
+          "fields": ["number"], 
+          "ops": ["count"], 
+          "as": ["spots"]
+        },
+        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["county_ansi_code"], "values": ["county"]} 
+        //{ "type": "filter", "expr": "datum.state != null" }
+      ]
+    },
+
+    {
+      "name": "county-sightings", 
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "counties"},
+    
+    "transform": [
+        { "type": "lookup", "from": "county_spots", "key": "county_ansi_code", "fields": ["id"], "values": ["spots"], "default": 0},
+        { "type": "lookup", "from": "county_spots", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "spots", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "spots", "county"] }
+      ]
+    }
+  ],
+  
+  "projections": [
+    {
+      "name": "projection",
+      "type": "albersUsa",
+      "scale": {"signal": "map_scale"},
+      "translate": [{"signal": "map_width / 2"}, {"signal": "map_height / 2"}]
+    }
+  ],
+
+
+
+
+
+  "signals": [
+    {
+      "name": "Class_A_selected", 
+      "value": true, 
+      "bind": {"input": "checkbox"}
+    },
+    {
+      "name": "Class_B_selected", 
+      "value": true, 
+      "bind": {"input": "checkbox"}
+    },
+    {
+      "name": "Class_C_selected", 
+      "value": true, 
+      "bind": {"input": "checkbox"}
+    },
+    {"name": "map_height", "value": 800},
+    {"name": "map_width", "value": 1400},
+    {"name": "map_scale", "value": 1600},
+    {"name": "timeline_height", "value": 200},
+    {"name": "timeline_width", "value": 1400},
+    {"name": "monthly_height", "value": 500},
+    {"name": "monthly_width", "value": 500}
+    
+
+  ],
+  "scales": [
+  ],
+
+  "marks": [
+    {
+      "type": "group",
+      "name": "toolbar",
+      "style": "cell",
+      "align": "left",
+      "encode": {
+        "update": {
+          "x": {"value": 1},
+          "y": {"value": 1}, 
+          "width": {"signal": "map_width"},
+          "height": {"value": 50}
+        }
+      }
+    },
+    {
+      "type": "group",
+      "name": "map-graph",
+      "style": "cell",
+      "align": "left",
+      "encode": {
+        "update": {
+          "x": {"value": 1},
+          "y": {"value": 1}, 
+          "width": {"signal": "map_width"},
+          "height": {"signal": "map_height"}
         }
       },
-
-      {
-        "name": "classification-store",
-        "source": "data_source", 
-        "transform": [
-          {
-            "type": "filter",
-            "expr": "if(Class_A_selected==false,datum.classification != 'Class A',datum)"
-          },
-          {
-            "type": "filter",
-            "expr": "if(Class_B_selected==false,datum.classification != 'Class B',datum)"
-          },
-          {
-            "type": "filter",
-            "expr": "if(Class_C_selected==false,datum.classification != 'Class C',datum)"
-          }
-          /*, 
-          {
-            "type": "collect",
-            "sort": {"field": "classification"}
-          }*/
-        ]
+      "title": {
+        "text": "Map of sightings",
+        "frame": "group"
       },
-      {
-        "name": "tod-source",
-        "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/time-of-day/data/word-frequencies/time-word-frequencies.csv",
-        "format": {"type": "csv", "delimiter": ",", "parse": {"no_of_reports_containing_word": "number", "id": "number"}},
-        "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]
-      },
-      {
-        "name": "brushed_data",
-        "source": "classification-store",
-        "transform": [
+      "data": [        ],
+      "projections": [        ],
+      "scales": [
           {
-            "type": "filter",
-            "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+              "name": "color",
+              "type": "ordinal",
+              "domain": {"data": "sightings", "field": "classification"},
+              "range": {"scheme": "blues"},
+              "reverse": true
           },
           {
-            "type": "filter",
-            "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
+              "name": "sightings",
+              "type": "quantize",
+              "domain": {"data": "county-sightings", "field": "spots"},//[0, 550],
+              "range": {"scheme": "yellowgreen", "count": 50}//,
+              //"reverse": true
           },
           {
-            "type": "filter",
-            "expr": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)"
-          }/*,
-          {
-            "type": "filter",
-            "expr": "!length(data(\"tod_brush_store\")) || vlSelectionTest(\"tod_brush_store\", datum)"
-          }*/
-        ]
-      },
-    
-      {
-        "name": "brushed_data_for_states",
-        "source": "classification-store",
-        "transform": [
-          {
-            "type": "filter",
-            "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
-          },
-          {
-            "type": "filter",
-            "expr": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)"
-          }
-        ]
-      },
-  
-      {
-        "name": "brushed_data_for_timeline",
-        "source": "classification-store",
-        "transform": [
-          {
-            "type": "filter",
-            "expr": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)"
-          },
-          {
-            "type": "filter",
-            "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
-          }
-        ]
-      },
-  
-      {
-        "name": "brushed_data_for_monthly",
-        "source": "classification-store",
-        "transform": [
-          {
-            "type": "filter",
-            "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
-          },
-          {
-            "type": "filter",
-            "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
-          }
-        ]
-      },  
-  
-      {"name": "highlight_store"}, // delete?
-      {
-        "name": "source_0",
-        "source": "brushed_data_for_monthly",
-        "format": {"type": "csv", "parse": {
-          "observed": "string",
-          "location_details": "string",
-          "county": "string",
-          "state": "string",
-          "season": "string",
-          "title": "string",
-          "latitude": "number",
-          "longitude": "number",
-          "date": "date",
-          "number": "number",
-          "classification": "string", 
-          "month": "number"
-        }, "delimiter": ","},
-        "transform": [
-                    {
-            "type": "filter",
-            "expr": "datum.date != null"
-          },
-          {
-            "type": "aggregate",
-            "groupby": ["month"],
-            "ops": ["count"],
-            "fields": [null],
-            "as": ["__count"]
-          },
-          {
-            "type": "collect",
-            "sort": {"field": "month"}
-          },
-          {"type": "identifier", "as": "_vgsid_"}, 
-          {"type": "pie"}
-        ]
-      },
-      {
-        "name": "states",
-        "url": "https://vega.github.io/editor/data/us-10m.json",
-        "format": {"type": "topojson", "feature": "states"},
-        "transform": [
-          {
-            "type": "geopath",
-            "projection": "projection"
-          }
-        ]
-      },
-      {
-        "name": "state-labels",
-        "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
-        "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
-      },
-      {
-        "name": "sightings", 
-        "source": "brushed_data_for_states", // "brushed_data",
-        "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "county_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
-        "transform": [
-          {
-            "type": "geopoint",
-            "projection": "projection",
-            "fields": ["longitude", "latitude"]
-          },
-          {
-            "type": "filter",
-            "expr": "datum.x != null && datum.y != null"
+              "name": "deselected-sightings",
+              "type": "quantize",
+              "domain": [0, 300],
+              "range": {"scheme": "greys", "count": 300}
           }, 
           {
-            "type": "collect",
-            "sort": {"field": "classification"}
-          }/*,
-          {
-            "type": "project", "fields":["state_ansi_code"], "as": ["id"]
-          }*/
-        ]
-      }, 
-      {
-        "name": "spots",
-        "source": ["sightings", "states"],
-        "transform": [
-          {
-            "type": "aggregate", 
-            "groupby": ["state"],
-            "fields": ["number"], "ops": ["count"], "as": ["spots"]
+            "name": "size",
+            "type": "point",
+            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "range": [50, 25]
           },
-          { "type": "lookup", "from": "state-labels", "key": "state", "fields": ["state"], "values": ["id"]}, 
-          { "type": "filter", "expr": "datum.state != null" }
-        ]
-      },
-      {
-        "name": "state-sightings",
-        "url": "https://vega.github.io/editor/data/us-10m.json",
-        "format": {"type": "topojson", "feature": "states"},
-        "transform": [
-          { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
-          ,
           {
-            "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "state_ansi_code", "properties", "geometry", "spots"]
+            "name": "shape",
+            "type": "ordinal",
+            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "range": ["circle", "diamond", "triangle"]
           }
-        ]
-      },
-
-
-
-
-
-      {
-        "name": "counties",
-        "url": "https://vega.github.io/editor/data/us-10m.json",
-        "format": {"type": "topojson", "feature": "counties"},
-        "transform": [
+      ],
+      "marks": [
           {
-            "type": "geopath",
-            "projection": "projection"
-          }
-        ]
-      },
-
-
-      {
-        "name": "county_spots",
-        "source": ["sightings", "counties"],
-        "transform": [
-          {
-            "type": "aggregate", 
-            "groupby": ["county"],
-            "fields": ["number"], "ops": ["count"], "as": ["spots"]
+            "type": "path",
+            "from": {"data": "states"},
+            "encode": {
+              "enter": {
+                  "fill": {"value": "#dedede"},
+                  "stroke": {"value": "#dedede"}
+              },
+              "update": {
+                  "path": {"field": "path"},
+                  "stroke": {"value": "#dedede"}
+              }
+            } 
           },
-          { "type": "lookup", "from": "sightings", "key": "county", "fields": ["county"], "values": ["county_ansi_code"], "as": ["id"]}, 
-          { "type": "filter", "expr": "datum.county != null" }
-        ]
-      },
-
-
-      {
-        "name": "county-sightings", 
-        "url": "https://vega.github.io/editor/data/us-10m.json",
-        "format": {"type": "topojson", "feature": "counties"},
-      
-      "transform": [
-          { "type": "lookup", "from": "county_spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
-          ,
           {
-            "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "county_ansi_code", "properties", "geometry", "spots"]
-          }
-        ]
-      },
-    ],
-    
-    "projections": [
-      {
-        "name": "projection",
-        "type": "albersUsa",
-        "scale": {"signal": "map_scale"},
-        "translate": [{"signal": "map_width / 2"}, {"signal": "map_height / 2"}]
-      }
-    ],
-
-
-
-
-
-    "signals": [
-      {
-        "name": "Class_A_selected", 
-        "value": true, 
-        "bind": {"input": "checkbox"}
-      },
-      {
-        "name": "Class_B_selected", 
-        "value": true, 
-        "bind": {"input": "checkbox"}
-      },
-      {
-        "name": "Class_C_selected", 
-        "value": true, 
-        "bind": {"input": "checkbox"}
-      },
-      {"name": "map_height", "value": 800},
-      {"name": "map_width", "value": 1400},
-      {"name": "map_scale", "value": 1600},
-      {"name": "timeline_height", "value": 200},
-      {"name": "timeline_width", "value": 1400},
-      {"name": "monthly_height", "value": 500},
-      {"name": "monthly_width", "value": 500}
-      
-
-    ],
-    "scales": [
-    ],
-  
-    "marks": [
-      {
-        "type": "group",
-        "name": "toolbar",
-        "style": "cell",
-        "align": "left",
-        "encode": {
-          "update": {
-            "x": {"value": 1},
-            "y": {"value": 1}, 
-            "width": {"signal": "map_width"},
-            "height": {"value": 50}
-          }
+            "type": "shape",
+            "from": {"data": "county-sightings"},
+            "encode": {
+              "enter": { 
+                "tooltip": {"signal": "datum.spots"}
+              },
+              "update": { 
+                "fill": [
+                  {"test": "datum.spots === 0", "value": "#ededed"}, 
+                  {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
+                  {"scale": "deselected-sightings", "field": "spots"}], 
+                "fillOpacity": [ {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
+                  {"value": 0.5}
+                ],
+                "stroke": {"value": "grey"},
+                "strokeWidth": {"value": 0.25},
+                "tooltip": {"signal": "{'title': datum.county, 'sightings': datum.spots}"}
+              },
+              "hover": {
+                "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots" },
+                {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
+                  {"scale": "sightings", "field": "spots"}
+                ],
+                "fillOpacity": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
+                  {"value": 1}]
+                
+              }
+            },
+            "transform": [
+              { "type": "geoshape", "projection": "projection" }
+            ]
+          },
+          {
+            "type": "symbol",
+            "style": ["point"],
+            "from": {"data": "sightings"},
+            "encode": {
+              "enter": {
+              // "size": {"value": 10},
+              
+              "tooltip": {
+                "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
+                  }
+              },
+              "update": {
+                "fill": {"scale": "color", "field": "classification"},
+                "fillOpacity": {"value": 0.1},
+                // "strokeWidth": {"value": 1}, 
+                "x": {"field": "x"},
+                "y": {"field": "y"},
+                "size": {"scale": "size", "field": "classification"},
+                "shape": {"scale": "shape", "field": "classification"}
+              }, 
+              "hover": { }
+            }
+        }
+      ],
+      "signals": [
+        {
+          "name" : "select",
+          "update": "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)"
+        },
+        {
+          "name": "select_tuple_fields",
+          "value": [{"type": "E", "field": "state_ansi_code"}]
+        },
+        {
+          "name": "select_tuple",
+          "on": [
+            {
+              "events": [{"source": "scope", "type": "click"}],
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "force": true
+            },
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+          ]
+        },
+        {
+          "name": "select_toggle",
+          "value":  false,
+          "on": [
+            {
+              "events": [{"source": "scope", "type": "click"}],
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "force": false
+            },
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+          ]
+        },
+        {
+          "name": "select_modify",
+          "on": [
+            {
+              "events": {"signal": "select_tuple"},
+              "update": "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "timeline-graph",
+      "style": "cell",
+      "align": "left",
+      "encode": {
+        "update": {
+          "x": {"value": 1},
+          "y": {"signal": "map_height"}, 
+          "width": {"signal": "timeline_width"},
+          "height": {"signal": "timeline_height"}
         }
       },
-      {
-        "type": "group",
-        "name": "map-graph",
-        "style": "cell",
-        "align": "left",
-        "encode": {
-          "update": {
-            "x": {"value": 1},
-            "y": {"value": 1}, 
-            "width": {"signal": "map_width"},
-            "height": {"signal": "map_height"}
-          }
-        },
-        "title": {
-          "text": "Map of sightings",
-          "frame": "group"
-        },
-        "data": [        ],
-        "projections": [        ],
-        "scales": [
-            {
-                "name": "color",
-                "type": "ordinal",
-                "domain": {"data": "sightings", "field": "classification"},
-                "range": {"scheme": "blues"},
-                "reverse": true
-            },
-            {
-                "name": "sightings",
-                "type": "quantize",
-                "domain": {"data": "county-sightings", "field": "spots"},//[0, 550],
-                "range": {"scheme": "yellowgreen", "count": 50}//,
-                //"reverse": true
-            },
-            {
-                "name": "deselected-sightings",
-                "type": "quantize",
-                "domain": [0, 300],
-                "range": {"scheme": "greys", "count": 300}
-            }, 
-            {
-              "name": "size",
-              "type": "point",
-              "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
-              "range": [50, 25]
-            },
-            {
-              "name": "shape",
-              "type": "ordinal",
-              "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
-              "range": ["circle", "diamond", "triangle"]
-            }
-        ],
-        "marks": [
-            {
-              "type": "path",
-              "from": {"data": "states"},
-              "encode": {
-                "enter": {
-                    "fill": {"value": "#dedede"},
-                    "stroke": {"value": "#dedede"}
-                },
-                "update": {
-                    "path": {"field": "path"},
-                    "stroke": {"value": "#dedede"}
-                }
-              } 
-            },
-            {
-              "type": "shape",
-              "from": {"data": "county-sightings"},
-              "encode": {
-                "enter": { 
-                  "tooltip": {"signal": "datum.spots"}
-                },
-                "update": { 
-                  "fill": [
-                    {"test": "datum.spots === 0", "value": "#ededed"}, 
-                    {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
-                    {"scale": "deselected-sightings", "field": "spots"}], 
-                  "fillOpacity": [ {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
-                    {"value": 0.5}
-                  ],
-                  "stroke": {"value": "grey"},
-                  "strokeWidth": {"value": 0.25},
-                  "tooltip": {"signal": "datum.spots"}
-                },
-                "hover": {
-                  "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots" },
-                  {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
-                    {"scale": "sightings", "field": "spots"}
-                  ],
-                  "fillOpacity": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
-                    {"value": 1}]
-                  
-                }
+      "title": {
+        "text": "Timeline of sightings",
+        "frame": "group"
+      },
+
+        "data": [
+          {"name": "timeline_data_raw", 
+          "source": "classification-store",
+          "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
+            "transform": [
+              {
+                "type": "filter",
+                "expr": "datum.date >= 0"
               },
-              "transform": [
-                { "type": "geoshape", "projection": "projection" }
-              ]
-            },
-            {
-              "type": "symbol",
-              "style": ["point"],
-              "from": {"data": "sightings"},
-              "encode": {
-                "enter": {
-                // "size": {"value": 10},
-                
-                "tooltip": {
-                  "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
-                    }
-                },
-                "update": {
-                  "fill": {"scale": "color", "field": "classification"},
-                  "fillOpacity": {"value": 0.1},
-                  // "strokeWidth": {"value": 1}, 
-                  "x": {"field": "x"},
-                  "y": {"field": "y"},
-                  "size": {"scale": "size", "field": "classification"},
-                  "shape": {"scale": "shape", "field": "classification"}
-                }, 
-                "hover": { }
+              {
+                "field": "date",
+                "type": "timeunit",
+                "units": ["year"],
+                "as": ["year_date", "year_date_end"]
+              },
+              {
+                "type": "aggregate",
+                "groupby": ["year_date"],
+                "ops": ["count"],
+                "fields": [null],
+                "as": ["__count"]
               }
+            ]
+          },
+          {
+            "name": "timeline_data",
+            "source": "brushed_data_for_timeline",
+            "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
+            "transform": [
+              {
+                "type": "filter",
+                "expr": "datum.date >= 0"
+              },
+              {
+                "field": "date",
+                "type": "timeunit",
+                "units": ["year"],
+                "as": ["year_date", "year_date_end"]
+              }
+            ]
+          },
+          {
+            "name": "data_0",
+            "source": "timeline_data",
+            "transform": [
+              {
+                "type": "filter",
+                "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
+              },
+              {
+                "type": "aggregate",
+                "groupby": ["year_date"],
+                "ops": ["count"],
+                "fields": [null],
+                "as": ["__count"]
+              }
+            ]
+          },
+          {
+            "name": "data_1",
+            "source": "timeline_data",
+            "transform": [
+              {
+                "type": "aggregate",
+                "groupby": ["year_date"],
+                "ops": ["count"],
+                "fields": [null],
+                "as": ["__count"]
+              }
+            ]
           }
         ],
         "signals": [
           {
-            "name" : "select",
-            "update": "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)"
-          },
-          {
-            "name": "select_tuple_fields",
-            "value": [{"type": "E", "field": "state_ansi_code"}]
-          },
-          {
-            "name": "select_tuple",
+            "name": "unit",
+            "value": {},
             "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
-                "force": true
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+              {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
             ]
           },
           {
-            "name": "select_toggle",
-            "value":  false,
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
-                "force": false
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
-            ]
+            "name": "brush",
+            "update": "vlSelectionResolve(\"timeline_brush_store\", \"union\")"
           },
           {
-            "name": "select_modify",
+            "name": "brush_x",
+            "value": [],
             "on": [
               {
-                "events": {"signal": "select_tuple"},
-                "update": "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+                "events": {
+                  "source": "scope",
+                  "type": "mousedown",
+                  "filter": [
+                    "!event.item || event.item.mark.name !== \"brush_brush\""
+                  ]
+                },
+                "update": "[x(unit), x(unit)]"
+              },
+              {
+                "events": {
+                  "source": "window",
+                  "type": "mousemove",
+                  "consume": true,
+                  "between": [
+                    {
+                      "source": "scope",
+                      "type": "mousedown",
+                      "filter": [
+                        "!event.item || event.item.mark.name !== \"brush_brush\""
+                      ]
+                    },
+                    {"source": "window", "type": "mouseup"}
+                  ]
+                },
+                "update": "[brush_x[0], clamp(x(unit), 0, width)]"
+              },
+              {
+                "events": {"signal": "brush_scale_trigger"},
+                "update": "[scale(\"x\", brush_year_date[0]), scale(\"x\", brush_year_date[1])]"
+              },
+              {
+                "events": [{"source": "view", "type": "dblclick"}],
+                "update": "[0, 0]"
+              },
+              {
+                "events": {"signal": "brush_translate_delta"},
+                "update": "clampRange(panLinear(brush_translate_anchor.extent_x, brush_translate_delta.x / span(brush_translate_anchor.extent_x)), 0, timeline_width)"
+              },
+              {
+                "events": {"signal": "brush_zoom_delta"},
+                "update": "clampRange(zoomLinear(brush_x, brush_zoom_anchor.x, brush_zoom_delta), 0, timeline_width)"
               }
             ]
-          }
-        ]
-      },
-      {
-        "type": "group",
-        "name": "timeline-graph",
-        "style": "cell",
-        "align": "left",
-        "encode": {
-          "update": {
-            "x": {"value": 1},
-            "y": {"signal": "map_height"}, 
-            "width": {"signal": "timeline_width"},
-            "height": {"signal": "timeline_height"}
-          }
-        },
-        "title": {
-          "text": "Timeline of sightings",
-          "frame": "group"
-        },
-  
-          "data": [
-            {"name": "timeline_data_raw", 
-            "source": "classification-store",
-            "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
-              "transform": [
-                {
-                  "type": "filter",
-                  "expr": "datum.date >= 0"
-                },
-                {
-                  "field": "date",
-                  "type": "timeunit",
-                  "units": ["year"],
-                  "as": ["year_date", "year_date_end"]
-                },
-                {
-                  "type": "aggregate",
-                  "groupby": ["year_date"],
-                  "ops": ["count"],
-                  "fields": [null],
-                  "as": ["__count"]
-                }
-              ]
-            },
-            {
-              "name": "timeline_data",
-              "source": "brushed_data_for_timeline",
-              "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
-              "transform": [
-                {
-                  "type": "filter",
-                  "expr": "datum.date >= 0"
-                },
-                {
-                  "field": "date",
-                  "type": "timeunit",
-                  "units": ["year"],
-                  "as": ["year_date", "year_date_end"]
-                }
-              ]
-            },
-            {
-              "name": "data_0",
-              "source": "timeline_data",
-              "transform": [
-                {
-                  "type": "filter",
-                  "expr": "!length(data(\"timeline_brush_store\")) || vlSelectionTest(\"timeline_brush_store\", datum)"
-                },
-                {
-                  "type": "aggregate",
-                  "groupby": ["year_date"],
-                  "ops": ["count"],
-                  "fields": [null],
-                  "as": ["__count"]
-                }
-              ]
-            },
-            {
-              "name": "data_1",
-              "source": "timeline_data",
-              "transform": [
-                {
-                  "type": "aggregate",
-                  "groupby": ["year_date"],
-                  "ops": ["count"],
-                  "fields": [null],
-                  "as": ["__count"]
-                }
-              ]
-            }
-          ],
-          "signals": [
-            {
-              "name": "unit",
-              "value": {},
-              "on": [
-                {"events": "mousemove", "update": "isTuple(group()) ? group() : unit"}
-              ]
-            },
-            {
-              "name": "brush",
-              "update": "vlSelectionResolve(\"timeline_brush_store\", \"union\")"
-            },
-            {
-              "name": "brush_x",
-              "value": [],
-              "on": [
-                {
-                  "events": {
-                    "source": "scope",
-                    "type": "mousedown",
-                    "filter": [
-                      "!event.item || event.item.mark.name !== \"brush_brush\""
-                    ]
-                  },
-                  "update": "[x(unit), x(unit)]"
-                },
-                {
-                  "events": {
+          },
+          {
+            "name": "brush_year_date",
+            "on": [
+              {
+                "events": {"signal": "brush_x"},
+                "update": "brush_x[0] === brush_x[1] ? null : invert(\"x\", brush_x)"
+              }
+            ]
+          },
+          {
+            "name": "brush_scale_trigger",
+            "value": {},
+            "on": [
+              {
+                "events": [{"scale": "x"}],
+                "update": "(!isArray(brush_year_date) || (+invert(\"x\", brush_x)[0] === +brush_year_date[0] && +invert(\"x\", brush_x)[1] === +brush_year_date[1])) ? brush_scale_trigger : {}"
+              }
+            ]
+          },
+          {
+            "name": "brush_tuple",
+            "on": [
+              {
+                "events": [{"signal": "brush_year_date"}],
+                "update": "brush_year_date ? {unit: \"layer_0\", fields: brush_tuple_fields, values: [brush_year_date]} : null"
+              }
+            ]
+          },
+          {
+            "name": "brush_tuple_fields",
+            "value": [{"field": "date", "channel": "x", "type": "R"}]
+          },
+          {
+            "name": "brush_translate_anchor",
+            "value": {},
+            "on": [
+              {
+                "events": [
+                  {"source": "scope", "type": "mousedown", "markname": "brush_brush"}
+                ],
+                "update": "{x: x(unit), y: y(unit), extent_x: slice(brush_x)}"
+              }
+            ]
+          },
+          {
+            "name": "brush_translate_delta",
+            "value": {},
+            "on": [
+              {
+                "events": [
+                  {
                     "source": "window",
                     "type": "mousemove",
                     "consume": true,
@@ -628,659 +716,574 @@
                       {
                         "source": "scope",
                         "type": "mousedown",
-                        "filter": [
-                          "!event.item || event.item.mark.name !== \"brush_brush\""
-                        ]
+                        "markname": "brush_brush"
                       },
                       {"source": "window", "type": "mouseup"}
                     ]
-                  },
-                  "update": "[brush_x[0], clamp(x(unit), 0, width)]"
-                },
-                {
-                  "events": {"signal": "brush_scale_trigger"},
-                  "update": "[scale(\"x\", brush_year_date[0]), scale(\"x\", brush_year_date[1])]"
-                },
-                {
-                  "events": [{"source": "view", "type": "dblclick"}],
-                  "update": "[0, 0]"
-                },
-                {
-                  "events": {"signal": "brush_translate_delta"},
-                  "update": "clampRange(panLinear(brush_translate_anchor.extent_x, brush_translate_delta.x / span(brush_translate_anchor.extent_x)), 0, timeline_width)"
-                },
-                {
-                  "events": {"signal": "brush_zoom_delta"},
-                  "update": "clampRange(zoomLinear(brush_x, brush_zoom_anchor.x, brush_zoom_delta), 0, timeline_width)"
-                }
-              ]
-            },
-            {
-              "name": "brush_year_date",
-              "on": [
-                {
-                  "events": {"signal": "brush_x"},
-                  "update": "brush_x[0] === brush_x[1] ? null : invert(\"x\", brush_x)"
-                }
-              ]
-            },
-            {
-              "name": "brush_scale_trigger",
-              "value": {},
-              "on": [
-                {
-                  "events": [{"scale": "x"}],
-                  "update": "(!isArray(brush_year_date) || (+invert(\"x\", brush_x)[0] === +brush_year_date[0] && +invert(\"x\", brush_x)[1] === +brush_year_date[1])) ? brush_scale_trigger : {}"
-                }
-              ]
-            },
-            {
-              "name": "brush_tuple",
-              "on": [
-                {
-                  "events": [{"signal": "brush_year_date"}],
-                  "update": "brush_year_date ? {unit: \"layer_0\", fields: brush_tuple_fields, values: [brush_year_date]} : null"
-                }
-              ]
-            },
-            {
-              "name": "brush_tuple_fields",
-              "value": [{"field": "date", "channel": "x", "type": "R"}]
-            },
-            {
-              "name": "brush_translate_anchor",
-              "value": {},
-              "on": [
-                {
-                  "events": [
-                    {"source": "scope", "type": "mousedown", "markname": "brush_brush"}
-                  ],
-                  "update": "{x: x(unit), y: y(unit), extent_x: slice(brush_x)}"
-                }
-              ]
-            },
-            {
-              "name": "brush_translate_delta",
-              "value": {},
-              "on": [
-                {
-                  "events": [
-                    {
-                      "source": "window",
-                      "type": "mousemove",
-                      "consume": true,
-                      "between": [
-                        {
-                          "source": "scope",
-                          "type": "mousedown",
-                          "markname": "brush_brush"
-                        },
-                        {"source": "window", "type": "mouseup"}
-                      ]
-                    }
-                  ],
-                  "update": "{x: brush_translate_anchor.x - x(unit), y: brush_translate_anchor.y - y(unit)}"
-                }
-              ]
-            },
-            {
-              "name": "brush_zoom_anchor",
-              "on": [
-                {
-                  "events": [
-                    {
-                      "source": "scope",
-                      "type": "wheel",
-                      "consume": true,
-                      "markname": "brush_brush"
-                    }
-                  ],
-                  "update": "{x: x(unit), y: y(unit)}"
-                }
-              ]
-            },
-            {
-              "name": "brush_zoom_delta",
-              "on": [
-                {
-                  "events": [
-                    {
-                      "source": "scope",
-                      "type": "wheel",
-                      "consume": true,
-                      "markname": "brush_brush"
-                    }
-                  ],
-                  "force": true,
-                  "update": "pow(1.001, event.deltaY * pow(16, event.deltaMode))"
-                }
-              ]
-            },
-            {
-              "name": "brush_modify",
-              "on": [
-                {
-                  "events": {"signal": "brush_tuple"},
-                  "update": "modify(\"timeline_brush_store\", brush_tuple, true)"
-                }
-              ]
-            }
-          ],
-          "marks": [
-            {
-              "name": "brush_brush_bg",
-              "type": "rect",
-              "clip": true,
-              "encode": {
-                "enter": {"fill": {"value": "#333"}, "fillOpacity": {"value": 0.3}},
-                "update": {
-                  "x": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "signal": "brush_x[0]"
-                    },
-                    {"value": 0}
-                  ],
-                  "y": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "value": 0
-                    },
-                    {"value": 0}
-                  ],
-                  "x2": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "signal": "brush_x[1]"
-                    },
-                    {"value": 0}
-                  ],
-                  "y2": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "field": {"group": "timeline_height"}
-                    },
-                    {"value": 0}
-                  ]
-                }
-              }
-            },
-            {
-              "name": "layer_bg_marks",
-              "type": "area",
-              "style": ["area"],
-              "sort": {"field": "datum[\"year_date\"]"},
-              "interactive": true,
-              "from": {"data": "timeline_data_raw"},
-              "encode": {
-                "update": {
-                  "tooltip": {
-                    "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'Total no. sightings': datum.__count}"
-                  },
-                  "orient": {"value": "vertical"},
-                  "fill": {"value": "#EDEDED"},
-                  "description": {
-                    "signal": "\"date (year): \" + (timeFormat(datum[\"year_date\"], timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"}))) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
-                  },
-                  "x": {"scale": "x", "field": "year_date"},
-                  "y": {"scale": "y", "field": "__count"},
-                  "y2": {"scale": "y", "value": 0},
-                  "defined": {
-                    "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
                   }
-                }
+                ],
+                "update": "{x: brush_translate_anchor.x - x(unit), y: brush_translate_anchor.y - y(unit)}"
               }
-            },
-            {
-              "name": "layer_0_marks",
-              "type": "area",
-              "style": ["area"],
-              "sort": {"field": "datum[\"year_date\"]"},
-              "interactive": true,
-              "from": {"data": "data_1"},
-              "encode": {
-                "update": {
-                  "tooltip": {
-                    "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'sightings': datum.__count}"
-                  },
-                  "orient": {"value": "vertical"},
-                  "fill": {"value": "lightgrey"},
-                  "description": {
-                    "signal": "\"date (year): \" + (timeFormat(datum[\"year_date\"], timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"}))) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
-                  },
-                  "x": {"scale": "x", "field": "year_date"},
-                  "y": {"scale": "y", "field": "__count"},
-                  "y2": {"scale": "y", "value": 0},
-                  "defined": {
-                    "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
-                  }
-                }
-              }
-            },
-            {
-              "name": "layer_1_marks",
-              "type": "area",
-              "style": ["area"],
-              "sort": {"field": "datum[\"year_date\"]"},
-              "interactive": false,
-              "from": {"data": "data_0"},
-              "encode": {
-                "update": {
-                  "orient": {"value": "vertical"},
-                  "fill": {"value": "green"},
-                  "description": {
-                    "signal": "\"date (year): \" + (timeFormat(datum[\"year_date\"], timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"}))) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
-                  },
-                  "x": {"scale": "x", "field": "year_date"},
-                  "y": {"scale": "y", "field": "__count"},
-                  "y2": {"scale": "y", "value": 0},
-                  "defined": {
-                    "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
-                  }
-                }
-              }
-            },
-            {
-              "name": "brush_brush",
-              "type": "rect",
-              "clip": true,
-              "encode": {
-                "enter": {"fill": {"value": "transparent"}},
-                "update": {
-                  "x": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "signal": "brush_x[0]"
-                    },
-                    {"value": 0}
-                  ],
-                  "y": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "value": 0
-                    },
-                    {"value": 0}
-                  ],
-                  "x2": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "signal": "brush_x[1]"
-                    },
-                    {"value": 0}
-                  ],
-                  "y2": [
-                    {
-                      "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                      "field": {"group": "height"}
-                    },
-                    {"value": 0}
-                  ],
-                  "stroke": [
-                    {"test": "brush_x[0] !== brush_x[1]", "value": "black"},
-                    {"value": null}
-                  ]
-                }
-              }
-            }
-          ],
-          "scales": [
-            {
-              "name": "x",
-              "type": "time",
-              "domain": {
-                "fields": [
-                  {"data": "data_1", "field": "year_date"},
-                  {"data": "data_0", "field": "year_date"}
-                ]
-              },
-              "range": [0, {"signal": "timeline_width"}]
-            },
-            {
-              "name": "y",
-              "type": "linear",
-              "domain": [0, 300],
-              "range": [{"signal": "timeline_height"}, 0],
-              "zero": true
-            }
-          ],
-          "axes": [
-            {
-              "scale": "x",
-              "orient": "bottom",
-              "gridScale": "y",
-              "grid": true,
-              "tickCount": {"signal": "ceil(timeline_width/40)"},
-              "domain": false,
-              "labels": false,
-              "aria": false,
-              "maxExtent": 0,
-              "minExtent": 0,
-              "ticks": false,
-              "zindex": 0
-            },
-            {
-              "scale": "y",
-              "orient": "left",
-              "gridScale": "x",
-              "grid": true,
-              "tickCount": {"signal": "ceil(timeline_height/40)"},
-              "domain": false,
-              "labels": false,
-              "aria": false,
-              "maxExtent": 0,
-              "minExtent": 0,
-              "ticks": false,
-              "zindex": 0
-            },
-            {
-              "scale": "x",
-              "orient": "bottom",
-              "grid": false,
-              "title": "date (year)",
-              "format": {
-                "signal": "timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"})"
-              },
-              "labelFlush": true,
-              "labelOverlap": true,
-              "tickCount": {"signal": "ceil(timeline_width/40)"},
-              "zindex": 0
-            },
-            {
-              "scale": "y",
-              "orient": "left",
-              "grid": false,
-              "title": "Count of Records",
-              "labelOverlap": true,
-              "tickCount": {"signal": "ceil(timeline_height/40)"},
-              "zindex": 0
-            }
-          ]
-      },
-      {
-        "type": "group",
-        "name": "monthly-graph",
-        "align": "right",
-        "encode": {
-          "update": {
-            "x": {"signal": "map_width"},
-            "y": {"value": 1},
-            "width": {"signal": "monthly_width"},
-            "height": {"signal": "monthly_height"}
-          }
-        },
-        "title": {
-          "text": "Monthly distribution of sightings",
-          "frame": "group"
-        }, 
-        "data": [
-          
-        ],
-        "scales": [
-          {
-          "name": "r",
-          "type": "linear",
-          "domain": {"data": "source_0", "field": "__count"},
-          "zero": true,
-          "range": [25, 150]
+            ]
           },
           {
-          "name": "color",
-          "type": "ordinal",
-          "domain": {"data": "source_0", "field": "__count"},
-          "range": ["green"], 
-          "reverse": false
+            "name": "brush_zoom_anchor",
+            "on": [
+              {
+                "events": [
+                  {
+                    "source": "scope",
+                    "type": "wheel",
+                    "consume": true,
+                    "markname": "brush_brush"
+                  }
+                ],
+                "update": "{x: x(unit), y: y(unit)}"
+              }
+            ]
+          },
+          {
+            "name": "brush_zoom_delta",
+            "on": [
+              {
+                "events": [
+                  {
+                    "source": "scope",
+                    "type": "wheel",
+                    "consume": true,
+                    "markname": "brush_brush"
+                  }
+                ],
+                "force": true,
+                "update": "pow(1.001, event.deltaY * pow(16, event.deltaMode))"
+              }
+            ]
+          },
+          {
+            "name": "brush_modify",
+            "on": [
+              {
+                "events": {"signal": "brush_tuple"},
+                "update": "modify(\"timeline_brush_store\", brush_tuple, true)"
+              }
+            ]
           }
         ],
         "marks": [
           {
+            "name": "brush_brush_bg",
+            "type": "rect",
+            "clip": true,
+            "encode": {
+              "enter": {"fill": {"value": "#333"}, "fillOpacity": {"value": 0.3}},
+              "update": {
+                "x": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "signal": "brush_x[0]"
+                  },
+                  {"value": 0}
+                ],
+                "y": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "value": 0
+                  },
+                  {"value": 0}
+                ],
+                "x2": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "signal": "brush_x[1]"
+                  },
+                  {"value": 0}
+                ],
+                "y2": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "field": {"group": "timeline_height"}
+                  },
+                  {"value": 0}
+                ]
+              }
+            }
+          },
+          {
+            "name": "layer_bg_marks",
+            "type": "area",
+            "style": ["area"],
+            "sort": {"field": "datum[\"year_date\"]"},
+            "interactive": true,
+            "from": {"data": "timeline_data_raw"},
+            "encode": {
+              "update": {
+                "tooltip": {
+                  "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'Total no. sightings': datum.__count}"
+                },
+                "orient": {"value": "vertical"},
+                "fill": {"value": "#EDEDED"},
+                "description": {
+                  "signal": "\"date (year): \" + (timeFormat(datum[\"year_date\"], timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"}))) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
+                },
+                "x": {"scale": "x", "field": "year_date"},
+                "y": {"scale": "y", "field": "__count"},
+                "y2": {"scale": "y", "value": 0},
+                "defined": {
+                  "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
+                }
+              }
+            }
+          },
+          {
+            "name": "layer_0_marks",
+            "type": "area",
+            "style": ["area"],
+            "sort": {"field": "datum[\"year_date\"]"},
+            "interactive": true,
+            "from": {"data": "data_1"},
+            "encode": {
+              "update": {
+                "tooltip": {
+                  "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'sightings': datum.__count}"
+                },
+                "orient": {"value": "vertical"},
+                "fill": {"value": "lightgrey"},
+                "description": {
+                  "signal": "\"date (year): \" + (timeFormat(datum[\"year_date\"], timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"}))) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
+                },
+                "x": {"scale": "x", "field": "year_date"},
+                "y": {"scale": "y", "field": "__count"},
+                "y2": {"scale": "y", "value": 0},
+                "defined": {
+                  "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
+                }
+              }
+            }
+          },
+          {
+            "name": "layer_1_marks",
+            "type": "area",
+            "style": ["area"],
+            "sort": {"field": "datum[\"year_date\"]"},
+            "interactive": false,
+            "from": {"data": "data_0"},
+            "encode": {
+              "update": {
+                "orient": {"value": "vertical"},
+                "fill": {"value": "green"},
+                "description": {
+                  "signal": "\"date (year): \" + (timeFormat(datum[\"year_date\"], timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"}))) + \"; Count of Records: \" + (format(datum[\"__count\"], \"\"))"
+                },
+                "x": {"scale": "x", "field": "year_date"},
+                "y": {"scale": "y", "field": "__count"},
+                "y2": {"scale": "y", "value": 0},
+                "defined": {
+                  "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
+                }
+              }
+            }
+          },
+          {
+            "name": "brush_brush",
+            "type": "rect",
+            "clip": true,
+            "encode": {
+              "enter": {"fill": {"value": "transparent"}},
+              "update": {
+                "x": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "signal": "brush_x[0]"
+                  },
+                  {"value": 0}
+                ],
+                "y": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "value": 0
+                  },
+                  {"value": 0}
+                ],
+                "x2": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "signal": "brush_x[1]"
+                  },
+                  {"value": 0}
+                ],
+                "y2": [
+                  {
+                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
+                    "field": {"group": "height"}
+                  },
+                  {"value": 0}
+                ],
+                "stroke": [
+                  {"test": "brush_x[0] !== brush_x[1]", "value": "black"},
+                  {"value": null}
+                ]
+              }
+            }
+          }
+        ],
+        "scales": [
+          {
+            "name": "x",
+            "type": "time",
+            "domain": {
+              "fields": [
+                {"data": "data_1", "field": "year_date"},
+                {"data": "data_0", "field": "year_date"}
+              ]
+            },
+            "range": [0, {"signal": "timeline_width"}]
+          },
+          {
+            "name": "y",
+            "type": "linear",
+            "domain": [0, 300],
+            "range": [{"signal": "timeline_height"}, 0],
+            "zero": true
+          }
+        ],
+        "axes": [
+          {
+            "scale": "x",
+            "orient": "bottom",
+            "gridScale": "y",
+            "grid": true,
+            "tickCount": {"signal": "ceil(timeline_width/40)"},
+            "domain": false,
+            "labels": false,
+            "aria": false,
+            "maxExtent": 0,
+            "minExtent": 0,
+            "ticks": false,
+            "zindex": 0
+          },
+          {
+            "scale": "y",
+            "orient": "left",
+            "gridScale": "x",
+            "grid": true,
+            "tickCount": {"signal": "ceil(timeline_height/40)"},
+            "domain": false,
+            "labels": false,
+            "aria": false,
+            "maxExtent": 0,
+            "minExtent": 0,
+            "ticks": false,
+            "zindex": 0
+          },
+          {
+            "scale": "x",
+            "orient": "bottom",
+            "grid": false,
+            "title": "date (year)",
+            "format": {
+              "signal": "timeUnitSpecifier([\"year\"], {\"year-month\":\"%b %Y \",\"year-month-date\":\"%b %d, %Y \"})"
+            },
+            "labelFlush": true,
+            "labelOverlap": true,
+            "tickCount": {"signal": "ceil(timeline_width/40)"},
+            "zindex": 0
+          },
+          {
+            "scale": "y",
+            "orient": "left",
+            "grid": false,
+            "title": "Count of Records",
+            "labelOverlap": true,
+            "tickCount": {"signal": "ceil(timeline_height/40)"},
+            "zindex": 0
+          }
+        ]
+    },
+    {
+      "type": "group",
+      "name": "monthly-graph",
+      "align": "right",
+      "encode": {
+        "update": {
+          "x": {"signal": "map_width"},
+          "y": {"value": 1},
+          "width": {"signal": "monthly_width"},
+          "height": {"signal": "monthly_height"}
+        }
+      },
+      "title": {
+        "text": "Monthly distribution of sightings",
+        "frame": "group"
+      }, 
+      "data": [
+        
+      ],
+      "scales": [
+        {
+        "name": "r",
+        "type": "linear",
+        "domain": {"data": "source_0", "field": "__count"},
+        "zero": true,
+        "range": [25, 150]
+        },
+        {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {"data": "source_0", "field": "__count"},
+        "range": ["green"], 
+        "reverse": false
+        }
+      ],
+      "marks": [
+        {
+        "type": "arc",
+        "from": {"data": "source_0"},
+        "encode": {
+          "enter": {
+            "x": {"field": {"group": "width"}, "mult": 0.5},
+            "y": {"field": {"group": "height"}, "mult": 0.5},
+            "startAngle": {"field": "startAngle"},
+            "endAngle": {"field": "endAngle"},
+            "innerRadius": {"value": 25},
+            "outerRadius": {"scale": "r", "field": "__count"},
+            "stroke": {"value": "#fff"}, 
+            "tooltip": {
+              "signal": "datum.__count"
+            }
+          },
+          "update": {
+            "x": {"field": {"group": "width"}, "mult": 0.5},
+            "y": {"field": {"group": "height"}, "mult": 0.5},
+            "startAngle": {"field": "startAngle"},
+            "endAngle": {"field": "endAngle"},
+            "innerRadius": {"value": 25},
+            "outerRadius": {"scale": "r", "field": "__count"},
+            "stroke": {"value": "#fff"}, 
+            "tooltip": {
+              "signal": "datum.__count"
+            },
+            "fill": [
+              {
+                "test": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)",
+                "scale": "color", 
+                "field": "__count"
+              },
+              {"value": "grey"}],
+              "fillOpacity": [
+                {
+                  "test": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)", 
+                  "value": 1
+                },
+                {"value": 0.3}
+              ]
+          },
+          "hover": {
+              "fillOpacity": [
+                    { "test": "vlSelectionTest(\"month_brush_store\", datum)", "value": 0.3} 
+                  ],
+                  "fill":{"value": "#134504"}
+            }
+        }
+        }, 
+      {
+        "type": "text",
+        "from": {"data": "source_0"},
+        "encode": {
+          "enter": {
+
+          }, 
+          "update": {
+            "x": {"field": {"group": "width"}, "mult": 0.5},
+            "y": {"field": {"group": "height"}, "mult": 0.5},
+            "radius": {"scale": "r", "field": "__count", "offset": 15},
+            "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
+            "fill": {"value": "#000"},
+            "align": {"value": "center"},
+            "baseline": {"value": "middle"},
+            "text": {"field": "month"}
+          }
+        }
+      }
+      ],
+      "signals": [
+        {
+          "name": "select",
+          "update": "vlSelectionResolve(\"month_brush_store\", \"union\", true, true)"
+        },
+        {
+          "name": "select_tuple_fields",
+          "value": [{"type": "E", "field": "month"}]
+        },
+        {
+          "name": "select_tuple",
+          "on": [
+            {
+              "events": [{"source": "scope", "type": "click"}],
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
+              "force": true
+            },
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+          ]
+        },
+        {
+          "name": "select_toggle",
+          "value":  false,
+          "on": [
+            {
+              "events": [{"source": "scope", "type": "click"}],
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
+              "force": false
+            },
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+          ]
+        },
+        {
+          "name": "select_modify",
+          "on": [
+            {
+              "events": {"signal": "select_tuple"},
+              "update": "modify(\"month_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "keywords-graph",
+      "style": "cell",
+      "align": "right",
+      "encode": {
+        "update": {
+          "x": {"signal": "map_width"},
+          "y": {"signal": "monthly_height"},
+          "width": {"signal": "monthly_width"},
+          "height": {"signal": "monthly_height"}
+        }
+      },
+      "title": {
+        "text": "Sightings based on select time-of-day keywords",
+        "frame": "group",
+        "subtitleFontSize": 6,
+        "subtitle": ["Keywords are found by analysing reports and may not accurately indicate which times of the day sightings occur"]
+      },
+      "data": [
+        
+      ],
+      "scales": [
+        {
+          "name": "r",
+          "type": "sqrt", 
+          "domain": {"data": "tod-source", "field": "no_of_reports_containing_word"}, 
+          "zero": true,
+          "range": [10, 200]
+        },
+        {
+        "name": "color",
+        "type": "ordinal",
+        "domain": {"data": "tod-source", "field": "id"},
+        "range": ["green"], 
+        "reverse": false
+        }
+      ],
+      "marks": [
+        {
           "type": "arc",
-          "from": {"data": "source_0"},
+          "from": {"data": "tod-source"},
           "encode": {
             "enter": {
               "x": {"field": {"group": "width"}, "mult": 0.5},
               "y": {"field": {"group": "height"}, "mult": 0.5},
               "startAngle": {"field": "startAngle"},
               "endAngle": {"field": "endAngle"},
-              "innerRadius": {"value": 25},
-              "outerRadius": {"scale": "r", "field": "__count"},
-              "stroke": {"value": "#fff"}, 
-              "tooltip": {
-                "signal": "datum.__count"
-              }
+              "innerRadius": {"value": 10},
+              "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
+              "stroke": {"value": "#fff"},
+              "tooltip": {"signal": "datum.no_of_reports_containing_word"}
             },
             "update": {
-              "x": {"field": {"group": "width"}, "mult": 0.5},
-              "y": {"field": {"group": "height"}, "mult": 0.5},
-              "startAngle": {"field": "startAngle"},
-              "endAngle": {"field": "endAngle"},
-              "innerRadius": {"value": 25},
-              "outerRadius": {"scale": "r", "field": "__count"},
-              "stroke": {"value": "#fff"}, 
-              "tooltip": {
-                "signal": "datum.__count"
-              },
-              "fill": [
-                {
-                  "test": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)",
-                  "scale": "color", 
-                  "field": "__count"
-                },
-                {"value": "grey"}],
-                "fillOpacity": [
+            "fill": [
+                {"test": "!length(data(\"tod_brush_store\")) || vlSelectionTest(\"tod_brush_store\", datum)", 
+                "scale": "color", 
+                "field": "id"}, 
+                {"value": "grey"}], 
+            "fillOpacity": [
                   {
-                    "test": "!length(data(\"month_brush_store\")) || vlSelectionTest(\"month_brush_store\", datum)", 
+                    "test": "!length(data(\"tod_brush_store\")) || vlSelectionTest(\"tod_brush_store\", datum)",
                     "value": 1
                   },
-                  {"value": 0.3}
+                  { "value": 0.3}
                 ]
-            },
+          },
             "hover": {
-                "fillOpacity": [
-                      { "test": "vlSelectionTest(\"month_brush_store\", datum)", "value": 0.3} 
-                    ],
-                    "fill":{"value": "#134504"}
-              }
+            "fillOpacity": [
+                  { "test": "vlSelectionTest(\"tod_brush_store\", datum)", "value": 0.3} 
+                ],
+                "fill":{"value": "#134504"}
+            }
           }
-          }, 
+        },
+
         {
           "type": "text",
-          "from": {"data": "source_0"},
+          "from": {"data": "tod-source"},
           "encode": {
             "enter": {
-  
-            }, 
-            "update": {
               "x": {"field": {"group": "width"}, "mult": 0.5},
               "y": {"field": {"group": "height"}, "mult": 0.5},
-              "radius": {"scale": "r", "field": "__count", "offset": 15},
+              "radius": {"scale": "r", "field": "no_of_reports_containing_word", "offset": 24},
+
               "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
               "fill": {"value": "#000"},
               "align": {"value": "center"},
               "baseline": {"value": "middle"},
-              "text": {"field": "month"}
+              "text": {"field": "word"}
             }
           }
         }
-        ],
-        "signals": [
-          {
-            "name": "select",
-            "update": "vlSelectionResolve(\"month_brush_store\", \"union\", true, true)"
-          },
-          {
-            "name": "select_tuple_fields",
-            "value": [{"type": "E", "field": "month"}]
-          },
-          {
-            "name": "select_tuple",
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
-                "force": true
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
-            ]
-          },
-          {
-            "name": "select_toggle",
-            "value":  false,
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"month\"]]} : null",
-                "force": false
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
-            ]
-          },
-          {
-            "name": "select_modify",
-            "on": [
-              {
-                "events": {"signal": "select_tuple"},
-                "update": "modify(\"month_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "type": "group",
-        "name": "keywords-graph",
-        "style": "cell",
-        "align": "right",
-        "encode": {
-          "update": {
-            "x": {"signal": "map_width"},
-            "y": {"signal": "monthly_height"},
-            "width": {"signal": "monthly_width"},
-            "height": {"signal": "monthly_height"}
-          }
+      ],
+      "signals": [
+        {
+          "name": "select",
+          "update": "vlSelectionResolve(\"tod_brush_store\", \"union\", true, true)"
         },
-        "title": {
-          "text": "Sightings based on select time-of-day keywords",
-          "frame": "group",
-          "subtitleFontSize": 6,
-          "subtitle": ["Keywords are found by analysing reports and may not accurately indicate which times of the day sightings occur"]
+        {
+          "name": "select_tuple_fields",
+          "value": [{"type": "E", "field": "reports"}]
         },
-        "data": [
-          
-        ],
-        "scales": [
-          {
-            "name": "r",
-            "type": "sqrt", 
-            "domain": {"data": "tod-source", "field": "no_of_reports_containing_word"}, 
-            "zero": true,
-            "range": [10, 200]
-          },
-          {
-          "name": "color",
-          "type": "ordinal",
-          "domain": {"data": "tod-source", "field": "id"},
-          "range": ["green"], 
-          "reverse": false
-          }
-        ],
-        "marks": [
-          {
-            "type": "arc",
-            "from": {"data": "tod-source"},
-            "encode": {
-              "enter": {
-                "x": {"field": {"group": "width"}, "mult": 0.5},
-                "y": {"field": {"group": "height"}, "mult": 0.5},
-                "startAngle": {"field": "startAngle"},
-                "endAngle": {"field": "endAngle"},
-                "innerRadius": {"value": 10},
-                "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
-                "stroke": {"value": "#fff"},
-                "tooltip": {"signal": "datum.no_of_reports_containing_word"}
-              },
-              "update": {
-              "fill": [
-                  {"test": "!length(data(\"tod_brush_store\")) || vlSelectionTest(\"tod_brush_store\", datum)", 
-                  "scale": "color", 
-                  "field": "id"}, 
-                  {"value": "grey"}], 
-              "fillOpacity": [
-                    {
-                      "test": "!length(data(\"tod_brush_store\")) || vlSelectionTest(\"tod_brush_store\", datum)",
-                      "value": 1
-                    },
-                    { "value": 0.3}
-                  ]
+        {
+          "name": "select_tuple",
+          "on": [
+            {
+              "events": [{"source": "scope", "type": "click"}],
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"reports\"]]} : null",
+              "force": true
             },
-              "hover": {
-              "fillOpacity": [
-                    { "test": "vlSelectionTest(\"tod_brush_store\", datum)", "value": 0.3} 
-                  ],
-                  "fill":{"value": "#134504"}
-              }
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+          ]
+        },
+        {
+          "name": "select_toggle",
+          "value":  false,
+          "on": [
+            {
+              "events": [{"source": "scope", "type": "click"}],
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"reports\"]]} : null",
+              "force": false
+            },
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+          ]
+        },
+        {
+          "name": "select_modify",
+          "on": [
+            {
+              "events": {"signal": "select_tuple"},
+              "update": "modify(\"tod_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
             }
-          },
-  
-          {
-            "type": "text",
-            "from": {"data": "tod-source"},
-            "encode": {
-              "enter": {
-                "x": {"field": {"group": "width"}, "mult": 0.5},
-                "y": {"field": {"group": "height"}, "mult": 0.5},
-                "radius": {"scale": "r", "field": "no_of_reports_containing_word", "offset": 24},
-  
-                "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
-                "fill": {"value": "#000"},
-                "align": {"value": "center"},
-                "baseline": {"value": "middle"},
-                "text": {"field": "word"}
-              }
-            }
-          }
-        ],
-        "signals": [
-          {
-            "name": "select",
-            "update": "vlSelectionResolve(\"tod_brush_store\", \"union\", true, true)"
-          },
-          {
-            "name": "select_tuple_fields",
-            "value": [{"type": "E", "field": "reports"}]
-          },
-          {
-            "name": "select_tuple",
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"reports\"]]} : null",
-                "force": true
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
-            ]
-          },
-          {
-            "name": "select_toggle",
-            "value":  false,
-            "on": [
-              {
-                "events": [{"source": "scope", "type": "click"}],
-                "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"reports\"]]} : null",
-                "force": false
-              },
-              {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
-            ]
-          },
-          {
-            "name": "select_modify",
-            "on": [
-              {
-                "events": {"signal": "select_tuple"},
-                "update": "modify(\"tod_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+          ]
+        }
+      ]
+    }
+  ]
+}
