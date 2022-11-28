@@ -259,9 +259,9 @@
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
       "transform": [
-        { "type": "lookup", "from": "county_or_state_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
-        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "no_of_sightings", "county"] }
+        { "type": "lookup", "from": "county_or_state_no_of_sightings", "key": "ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", {"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
       ]
       
 
@@ -302,9 +302,9 @@
       "name": "Map_view", "value": "states",
       "bind": {"input": "radio", "options": ["states", "counties"]}
     },
-    {
+    /*{
       "name": "map_data", "value": {"signal": "Map_view === 'states' ? 'state_map_data' : 'county_map_data'"}
-    },
+    },*/
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
     {"name": "map_scale", "value": 1600},
@@ -407,7 +407,7 @@
           },
           {
             "type": "shape",
-            "from": {"data": "state_map_data"}, //{"data": "county_map_data"},//{"data": "{\"signal\": \"map_data\"}"},// 
+            "from": {"data": "map_data"},// {"data": "state_map_data"}, //{"data": "county_map_data"},//{"data": "{\"signal\": \"map_data\"}"},// 
             "encode": {
               "update": { 
                 "fill": [
