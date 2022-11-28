@@ -234,8 +234,8 @@
     },
 
     {
-      "name": "county_spots",
-      "source": ["sightings", "counties"],
+      "name": "county_no_of_sightings",
+      "source": ["sightings"],
       "transform": [
         {
           "type": "aggregate", 
@@ -243,19 +243,16 @@
           "fields": ["number"], 
           "ops": ["count"], 
           "as": ["spots"]
-        },
-        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["county_ansi_code"], "values": ["county"]} 
-        //{ "type": "filter", "expr": "datum.state != null" }
+        }
       ]
     },
 
     {
-      "name": "county-sightings", 
+      "name": "county_map_data", 
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "counties"},
-    
-    "transform": [
-        { "type": "lookup", "from": "county_spots", "key": "county_ansi_code", "fields": ["id"], "values": ["spots"], "default": 0},
+      "transform": [
+        { "type": "lookup", "from": "county_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["spots"], "default": 0},
         { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
         { "type": "project", "fields":["type", "id", "properties", "geometry", "spots", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "spots", "county"] }
       ]
@@ -356,7 +353,7 @@
           {
               "name": "sightings",
               "type": "quantize",
-              "domain": {"data": "county-sightings", "field": "spots"},//[0, 550],
+              "domain": {"data": "county_map_data", "field": "spots"},//[0, 550],
               "range": {"scheme": "yellowgreen", "count": 50}//,
               //"reverse": true
           },
@@ -396,7 +393,7 @@
           },
           {
             "type": "shape",
-            "from": {"data": "county-sightings"},
+            "from": {"data": "county_map_data"},
             "encode": {
               /*"enter": { 
                 "tooltip": {"signal": "datum.spots"}
