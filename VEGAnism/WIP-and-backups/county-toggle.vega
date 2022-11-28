@@ -232,6 +232,34 @@
         { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
         { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "no_of_sightings", "county"] }
       ]
+    },
+
+    {
+      "name": "county_or_state_no_of_sightings",
+      "source": ["sightings"],
+      "transform": [
+        {
+          "type": "aggregate", 
+          "groupby": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}],
+          "fields": ["number"], 
+          "ops": ["count"], 
+          "as": ["no_of_sightings"]
+        }
+      ]
+    },
+
+    {
+      "name": "map_data",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
+      "transform": [
+        { "type": "lookup", "from": "county_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
+        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "no_of_sightings", "county"] }
+      ]
+      
+
+
     }
   ],
   
@@ -267,6 +295,9 @@
     {
       "name": "Map_view", "value": "states",
       "bind": {"input": "radio", "options": ["states", "counties"]}
+    },
+    {
+      "name": "map_data", "value": {"signal": "Map_view === 'states' ? 'state_map_data' : 'county_map_data'"}
     },
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
@@ -370,7 +401,7 @@
           },
           {
             "type": "shape",
-            "from": {"data": "state_map_data"}, //{"data": "county_map_data"},
+            "from": {"data": "state_map_data"}, //{"data": "county_map_data"},//{"data": "{\"signal\": \"map_data\"}"},// 
             "encode": {
               "update": { 
                 "fill": [
@@ -414,7 +445,6 @@
             "encode": {
               "enter": {
               // "size": {"value": 10},
-              
               "tooltip": {
                 "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
                   }
