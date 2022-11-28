@@ -367,8 +367,6 @@
               "name": "sightings",
               "type": "quantize",
               "domain": {"data": "map_data", "field": "no_of_sightings"},
-              // "domain": {"data": "state_map_data", "field": "no_of_sightings"},
-              // "domain": {"data": "county_map_data", "field": "no_of_sightings"},
               "range": {"scheme": "yellowgreen", "count": 50}//,
               //"reverse": true
           },
@@ -408,7 +406,7 @@
           },
           {
             "type": "shape",
-            "from": {"data": "map_data"},// {"data": "state_map_data"}, //{"data": "county_map_data"},//{"data": "{\"signal\": \"map_data\"}"},// 
+            "from": {"data": "map_data"},
             "encode": {
               "update": { 
                 "fill": [
@@ -423,7 +421,7 @@
                 ],
                 "stroke": {"value": "grey"},
                 "strokeWidth": {"value": 0.25},
-                "tooltip": {"signal": "{'title': datum.state, 'Sightings': datum.no_of_sightings}"}// {"signal": "{'title': datum.county, 'Sightings': datum.no_of_sightings}"}
+                "tooltip": {"signal": "{'title': datum.name, 'Sightings': datum.no_of_sightings}"}
               },
               "hover": {
                 "fill": [ 
