@@ -192,7 +192,7 @@
       ]
     }, 
     {
-      "name": "spots",
+      "name": "state_spots",
       "source": ["sightings", "states"],
       "transform": [
         {
@@ -209,7 +209,7 @@
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
-        { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
+        { "type": "lookup", "from": "state_spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
         ,
         {
           "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "state_ansi_code", "properties", "geometry", "spots"]
