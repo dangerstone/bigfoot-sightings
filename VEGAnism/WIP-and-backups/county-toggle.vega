@@ -192,7 +192,7 @@
       ]
     }, 
     {
-      "name": "state_spots",
+      "name": "state_no_of_sightings",
       "source": ["sightings", "states"],
       "transform": [
         {
@@ -209,7 +209,7 @@
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
-        { "type": "lookup", "from": "state_spots", "key": "id", "fields": ["id"], "values": ["no_of_sightings"], "default": 0}
+        { "type": "lookup", "from": "state_no_of_sightings", "key": "id", "fields": ["id"], "values": ["no_of_sightings"], "default": 0}
         ,
         {
           "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings"], "as": ["type", "state_ansi_code", "properties", "geometry", "no_of_sightings"]
