@@ -564,7 +564,7 @@
             ]
           },
           {
-            "name": "data_0",
+            "name": "timeline_data_selected",
             "source": "timeline_data",
             "transform": [
               {
@@ -581,7 +581,7 @@
             ]
           },
           {
-            "name": "data_1",
+            "name": "timeline_data_unselected",
             "source": "timeline_data",
             "transform": [
               {
@@ -807,7 +807,7 @@
             }
           },
           {
-            "name": "layer_bg_marks",
+            "name": "timeline_marks_unfiltered",
             "type": "area",
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
@@ -833,12 +833,12 @@
             }
           },
           {
-            "name": "layer_0_marks",
+            "name": "timeline_marks_unselected",
             "type": "area",
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": true,
-            "from": {"data": "data_1"},
+            "from": {"data": "timeline_data_unselected"},
             "encode": {
               "update": {
                 "tooltip": {
@@ -859,12 +859,12 @@
             }
           },
           {
-            "name": "layer_1_marks",
+            "name": "timeline_marks_selected",
             "type": "area",
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": false,
-            "from": {"data": "data_0"},
+            "from": {"data": "timeline_data_selected"},
             "encode": {
               "update": {
                 "orient": {"value": "vertical"},
@@ -930,8 +930,8 @@
             "type": "time",
             "domain": {
               "fields": [
-                {"data": "data_1", "field": "year_date"},
-                {"data": "data_0", "field": "year_date"}
+                {"data": "timeline_data_unselected", "field": "year_date"},
+                {"data": "timeline_data_selected", "field": "year_date"}
               ]
             },
             "range": [0, {"signal": "timeline_width"}]
