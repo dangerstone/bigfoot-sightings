@@ -244,7 +244,13 @@
           "fields": ["number"], 
           "ops": ["count"], 
           "as": ["no_of_sightings"]
+        },
+        {
+          "type": "project",
+          "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "no_of_sightings"],
+          "as": ["ansi_code", "no_of_sightings"]
         }
+
       ]
     },
 
@@ -253,7 +259,7 @@
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
       "transform": [
-        { "type": "lookup", "from": "county_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
+        { "type": "lookup", "from": "county_or_state_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
         { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
         { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "no_of_sightings", "county"] }
       ]
