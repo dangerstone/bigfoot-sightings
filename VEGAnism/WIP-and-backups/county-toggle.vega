@@ -366,7 +366,8 @@
           {
               "name": "sightings",
               "type": "quantize",
-              "domain": {"data": "state_map_data", "field": "no_of_sightings"},
+              "domain": {"data": "map_data", "field": "no_of_sightings"},
+              // "domain": {"data": "state_map_data", "field": "no_of_sightings"},
               // "domain": {"data": "county_map_data", "field": "no_of_sightings"},
               "range": {"scheme": "yellowgreen", "count": 50}//,
               //"reverse": true
