@@ -523,7 +523,7 @@
       },
 
         "data": [
-          {"name": "timeline_data_raw", 
+          {"name": "timeline_data_unfiltered", 
           "source": "classification-store",
           "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
             "transform": [
@@ -812,7 +812,7 @@
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": true,
-            "from": {"data": "timeline_data_raw"},
+            "from": {"data": "timeline_data_unfiltered"},
             "encode": {
               "update": {
                 "tooltip": {
