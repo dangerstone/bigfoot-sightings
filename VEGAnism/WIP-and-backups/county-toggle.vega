@@ -474,14 +474,15 @@
         },
         {
           "name": "select_tuple_fields",
-          "value": [{"type": "E", "field":"state_ansi_code"}] // "county_ansi_code"}]
+          // ---------------------  THIS IS WHERE IT FUCKS UP I THINK
+          "value": [{"type": "E", "field": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}}] // [{"type": "E", "fields": "state_ansi_code"}] // "county_ansi_code"}]
         },
         {
           "name": "select_tuple",
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update":  "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null", "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update":  "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null", "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": true
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
@@ -493,7 +494,7 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": false
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
