@@ -205,7 +205,7 @@
       ]
     },
     {
-      "name": "state-sightings",
+      "name": "state_map_data",
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
@@ -337,7 +337,7 @@
           {
               "name": "sightings",
               "type": "quantize",
-              "domain": {"data": "state-sightings", "field": "no_of_sightings"},
+              "domain": {"data": "state_map_data", "field": "no_of_sightings"},
               // "domain": {"data": "county_map_data", "field": "no_of_sightings"},
               "range": {"scheme": "yellowgreen", "count": 50}//,
               //"reverse": true
@@ -378,7 +378,7 @@
           },
           {
             "type": "shape",
-            "from": {"data": "state-sightings"}, //{"data": "county_map_data"},
+            "from": {"data": "state_map_data"}, //{"data": "county_map_data"},
             "encode": {
               "update": { 
                 "fill": [
