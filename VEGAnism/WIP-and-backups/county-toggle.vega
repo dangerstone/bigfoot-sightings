@@ -17,8 +17,7 @@
   },
   "data": [
     
-    {"name": "state_brush_store"},
-    {"name": "county_brush_store"},
+    {"name": "state_or_county_brush_store"},
     {"name": "timeline_brush_store"},
     {"name": "month_brush_store"},
     {"name": "tod_brush_store"},
@@ -76,8 +75,7 @@
       "transform": [
         {
           "type": "filter",
-          // "expr": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)"
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)"
         },
         {
           "type": "filter",
@@ -119,8 +117,7 @@
         },
         {
           "type": "filter",
-          // "expr": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)"
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)"
         }
       ]
     },
@@ -135,8 +132,7 @@
         },
         {
           "type": "filter",
-          // "expr": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)"
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)"
         },
         {
           "type": "filter",
@@ -245,16 +241,11 @@
       "transform": [
         {
           "type": "aggregate", 
-          "groupby": ["ansi_code"], //[{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}],
+          "groupby": ["ansi_code"],
           "fields": ["number"], 
           "ops": ["count"], 
           "as": ["no_of_sightings"]
-        }/*,
-        {
-          "type": "project",
-          "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "no_of_sightings"],
-          "as": ["ansi_code", "no_of_sightings"]
-        }*/
+        }
 
       ]
     },
@@ -265,7 +256,7 @@
       "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
       "transform": [
         { "type": "lookup", "from": "county_or_state_no_of_sightings", "key": "ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "ansi", "key": "ansi_code"/*{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}*/, "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
+        { "type": "lookup", "from": "ansi", "key": "ansi_code", "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
         { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", {"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
       ]
       
@@ -307,9 +298,6 @@
       "name": "Map_view", "value": "states",
       "bind": {"input": "radio", "options": ["states", "counties"]}
     },
-    /*{
-      "name": "map_data", "value": {"signal": "Map_view === 'states' ? 'state_map_data' : 'county_map_data'"}
-    },*/
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
     {"name": "map_scale", "value": 1600},
@@ -416,12 +404,10 @@
               "update": { 
                 "fill": [
                   {"test": "datum.no_of_sightings === 0", "value": "#ededed"}, 
-                  // {"test": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"}, 
-                  {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"}, 
+                  {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"}, 
                   {"scale": "deselected-sightings", "field": "no_of_sightings"}], 
                 "fillOpacity": [ 
-                  // {"test": "!length(data(\"county_brush_store\")) || vlSelectionTest(\"county_brush_store\", datum)", "value": 1 },
-                  {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
+                  {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 1 },
                   {"value": 0.5}
                 ],
                 "stroke": {"value": "grey"},
@@ -430,15 +416,12 @@
               },
               "hover": {
                 "fill": [ 
-                  // {"test": "vlSelectionTest(\"county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings" },
-                  {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings" },
-                  // {"test": "!length(data(\"county_brush_store\"))", "value": "#134504" },
-                  {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
+                  {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings" },
+                  {"test": "!length(data(\"state_or_county_brush_store\"))", "value": "#134504" },
                   {"scale": "sightings", "field": "no_of_sightings"}
                 ],
                 "fillOpacity": [ 
-                  // {"test": "vlSelectionTest(\"county_brush_store\", datum)", "value": 0.3 },
-                  {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
+                  {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 0.3 },
                   {"value": 1}
                 ]
                 
@@ -455,7 +438,6 @@
             "interactive": false,
             "encode": {
               "enter": {
-              // "size": {"value": 10},
               "tooltip": {
                 "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
                   }
@@ -463,7 +445,6 @@
               "update": {
                 "fill": {"scale": "color", "field": "classification"},
                 "fillOpacity": {"value": 0.1},
-                // "strokeWidth": {"value": 1}, 
                 "x": {"field": "x"},
                 "y": {"field": "y"},
                 "size": {"scale": "size", "field": "classification"},
@@ -475,19 +456,18 @@
       "signals": [
         {
           "name" : "select",
-          "update": "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)" // "vlSelectionResolve(\"county_brush_store\", \"union\", true, true)"// 
+          "update": "vlSelectionResolve(\"state_or_county_brush_store\", \"union\", true, true)" 
         },
         {
           "name": "select_tuple_fields",
-          // ---------------------  THIS IS WHERE IT FUCKS UP I THINK
-          "value": [{"type": "E", "field": "ansi_code"}]// "field": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}}] // [{"type": "E", "fields": "state_ansi_code"}] // "county_ansi_code"}]
+          "value": [{"type": "E", "field": "ansi_code"}]
         },
         {
           "name": "select_tuple",
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update":  "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null", "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update":  "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", 
               "force": true
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "null"},
@@ -500,7 +480,7 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null",
               "force": false
             },
             {"events": [{"source": "view", "type": "dblclick"}], "update": "false"},
@@ -512,7 +492,7 @@
           "on": [
             {
               "events": {"signal": "select_tuple"},
-              "update": "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"//"modify(\"county_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)" 
+              "update": "modify(\"state_or_county_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
             }
           ]
         }
