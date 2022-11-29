@@ -490,7 +490,8 @@
               "update":  "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"county_ansi_code\"]]} : null", "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": true
             },
-            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"},
+            {"events": [{"source": "#vis > div > form > div:nth-child(4) > span.vega-bind-radio", "type": "click"}], "update": "null"}
           ]
         },
         {
@@ -502,7 +503,8 @@
               "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", // "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
               "force": false
             },
-            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"},
+            {"events": [{"source": "#vis > div > form > div:nth-child(4) > span.vega-bind-radio", "type": "click"}], "update": "false"}
           ]
         },
         {
