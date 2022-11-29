@@ -262,7 +262,7 @@
       },
   
       {
-        "name": "marks_table_idk",
+        "name": "sightings_symbols_table",
         "source": ["sightings"],
         "transform": [
           {
@@ -462,7 +462,7 @@
             {
               "type": "symbol",
               "style": ["point"],
-              "from": {"data": "marks_table_idk"},//{"data": "sightings"},
+              "from": {"data": "sightings_symbols_table"},//{"data": "sightings"},
               //"interactive": false,
               "encode": {
                 "enter": {
