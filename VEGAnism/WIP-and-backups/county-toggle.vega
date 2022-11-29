@@ -23,12 +23,22 @@
     {"name": "month_brush_store"},
     {"name": "tod_brush_store"},
     {
+      "name": "ansi",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/main/data/misc/ansi.csv",
+      "format": {"type": "csv", "parse": {"state_ansi_code": "number", "county_ansi_code": "number"}}
+    },
+    {
       "name": "data_source",
       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
       "format": {
         "type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "county_ansi_code": "number", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string", "month": "number"
         }
-      }
+      },
+      "transform": [
+        // add name and ansi_code column (real dumb)
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "as": ["ansi_code"]},
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["name"]}
+      ]
     },
 
     {
@@ -148,7 +158,7 @@
       ]
     },  
     {
-      "name": "states",
+      "name": "states", // delete?
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
@@ -157,11 +167,6 @@
           "projection": "projection"
         }
       ]
-    },
-    {
-      "name": "ansi",
-      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/main/data/misc/ansi.csv",
-      "format": {"type": "csv", "parse": {"state_ansi_code": "number", "county_ansi_code": "number"}}
     },
     {
       "name": "sightings", 
@@ -240,16 +245,16 @@
       "transform": [
         {
           "type": "aggregate", 
-          "groupby": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}],
+          "groupby": ["ansi_code"], //[{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}],
           "fields": ["number"], 
           "ops": ["count"], 
           "as": ["no_of_sightings"]
-        },
+        }/*,
         {
           "type": "project",
           "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "no_of_sightings"],
           "as": ["ansi_code", "no_of_sightings"]
-        }
+        }*/
 
       ]
     },
@@ -260,7 +265,7 @@
       "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
       "transform": [
         { "type": "lookup", "from": "county_or_state_no_of_sightings", "key": "ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
+        { "type": "lookup", "from": "ansi", "key": "ansi_code"/*{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}*/, "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
         { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", {"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
       ]
       
@@ -379,13 +384,13 @@
           {
             "name": "size",
             "type": "point",
-            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "domain": {"data": "sightings", "field": "classification"}, 
             "range": [50, 25]
           },
           {
             "name": "shape",
             "type": "ordinal",
-            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "domain": {"data": "sightings", "field": "classification"}, 
             "range": ["circle", "diamond", "triangle"]
           }
       ],
@@ -447,6 +452,7 @@
             "type": "symbol",
             "style": ["point"],
             "from": {"data": "sightings"},
+            "interactive": false,
             "encode": {
               "enter": {
               // "size": {"value": 10},
@@ -462,8 +468,7 @@
                 "y": {"field": "y"},
                 "size": {"scale": "size", "field": "classification"},
                 "shape": {"scale": "shape", "field": "classification"}
-              }, 
-              "hover": { }
+              }
             }
         }
       ],
@@ -475,7 +480,7 @@
         {
           "name": "select_tuple_fields",
           // ---------------------  THIS IS WHERE IT FUCKS UP I THINK
-          "value": [{"type": "E", "field": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}}] // [{"type": "E", "fields": "state_ansi_code"}] // "county_ansi_code"}]
+          "value": [{"type": "E", "field": "ansi_code"}]// "field": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}}] // [{"type": "E", "fields": "state_ansi_code"}] // "county_ansi_code"}]
         },
         {
           "name": "select_tuple",
