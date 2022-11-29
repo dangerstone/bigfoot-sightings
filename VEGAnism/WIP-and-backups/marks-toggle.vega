@@ -450,7 +450,7 @@
               "type": "symbol",
               "style": ["point"],
               "from": {"data": "sightings"},
-              "interactive": false,
+              //"interactive": false,
               "encode": {
                 "enter": {
                 "tooltip": {
@@ -459,7 +459,7 @@
                 },
                 "update": {
                   "fill": {"scale": "color", "field": "classification"},
-                  "fillOpacity": {"value": 0.1},
+                  "fillOpacity": {"value": 0.5},
                   "x": {"field": "x"},
                   "y": {"field": "y"},
                   "size": {"scale": "size", "field": "classification"},
