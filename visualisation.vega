@@ -3,7 +3,7 @@
   "height": 1000,
   "width": 1800,
   "padding": 5,
-  //"background": "grey",
+  "background": "#ededed",
 
   "title": {
     "text": "Bigfoot Sightings in North America",
