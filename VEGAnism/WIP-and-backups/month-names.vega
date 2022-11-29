@@ -149,7 +149,12 @@
             "type": "collect",
             "sort": {"field": "month"}
           },
-          {"type": "identifier", "as": "_vgsid_"}, 
+         {
+            "type": "formula",
+            "expr": "monthFormat(datum.month-1)",
+            "as": "month_name"
+          },
+          // {"type": "identifier", "as": "_vgsid_"}, 
           {"type": "pie"}
         ]
       },  
@@ -1126,7 +1131,7 @@
               "fill": {"value": "#000"},
               "align": {"value": "center"},
               "baseline": {"value": "middle"},
-              "text": {"field": "month"}
+              "text":  {"field": "month_name"} // TRANSLATE TO ACTUAL MONTH
             }
           }
         }
