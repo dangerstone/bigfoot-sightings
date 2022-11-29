@@ -867,7 +867,7 @@
               "encode": {
                 "update": {
                   "tooltip": {
-                    "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'sightings': datum.__count}"
+                    "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'Sightings': datum.__count}"
                   },
                   "orient": {"value": "vertical"},
                   "fill": {"value": "lightgrey"},
@@ -1074,7 +1074,7 @@
               "outerRadius": {"scale": "r", "field": "__count"},
               "stroke": {"value": "#fff"}, 
               "tooltip": {
-                "signal": "datum.__count"
+                "signal": "{'Sightings': datum.__count}"
               }
             },
             "update": {
@@ -1086,7 +1086,7 @@
               "outerRadius": {"scale": "r", "field": "__count"},
               "stroke": {"value": "#fff"}, 
               "tooltip": {
-                "signal": "datum.__count"
+                "signal": "{'Sightings': datum.__count}"
               },
               "fill": [
                 {
@@ -1228,7 +1228,7 @@
                 "innerRadius": {"value": 10},
                 "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
                 "stroke": {"value": "#fff"},
-                "tooltip": {"signal": "datum.no_of_reports_containing_word"}
+                "tooltip": {"signal": "{'Sightings': datum.no_of_reports_containing_word}"}
               },
               "update": {
               "fill": [
