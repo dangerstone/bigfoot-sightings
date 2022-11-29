@@ -184,56 +184,6 @@
         }
       ]
     }, 
-    {
-      "name": "state_no_of_sightings",
-      "source": ["sightings"],
-      "transform": [
-        {
-          "type": "aggregate", 
-          "groupby": ["state_ansi_code"],
-          "fields": ["number"], 
-          "ops": ["count"], 
-          "as": ["no_of_sightings"]
-        }
-      ]
-    },
-    {
-      "name": "state_map_data",
-      "url": "https://vega.github.io/editor/data/us-10m.json",
-      "format": {"type": "topojson", "feature": "states"},
-      "transform": [
-        { "type": "lookup", "from": "state_no_of_sightings", "key": "state_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "ansi", "key": "state_ansi_code", "fields": ["id"], "values": ["state"]},
-        {
-          "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "state"], "as": ["type", "state_ansi_code", "properties", "geometry", "no_of_sightings", "state"]
-        }
-      ]
-    },
-
-    {
-      "name": "county_no_of_sightings",
-      "source": ["sightings"],
-      "transform": [
-        {
-          "type": "aggregate", 
-          "groupby": ["county_ansi_code"],
-          "fields": ["number"], 
-          "ops": ["count"], 
-          "as": ["no_of_sightings"]
-        }
-      ]
-    },
-
-    {
-      "name": "county_map_data", 
-      "url": "https://vega.github.io/editor/data/us-10m.json",
-      "format": {"type": "topojson", "feature": "counties"},
-      "transform": [
-        { "type": "lookup", "from": "county_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
-        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "no_of_sightings", "county"] }
-      ]
-    },
 
     {
       "name": "county_or_state_no_of_sightings",
