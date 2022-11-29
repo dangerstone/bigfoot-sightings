@@ -149,7 +149,12 @@
           "type": "collect",
           "sort": {"field": "month"}
         },
-        {"type": "identifier", "as": "_vgsid_"}, 
+       {
+          "type": "formula",
+          "expr": "monthAbbrevFormat(datum.month-1)",
+          "as": "month_name"
+        },
+        // {"type": "identifier", "as": "_vgsid_"}, 
         {"type": "pie"}
       ]
     },  
@@ -867,7 +872,7 @@
             "encode": {
               "update": {
                 "tooltip": {
-                  "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'sightings': datum.__count}"
+                  "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'Sightings': datum.__count}"
                 },
                 "orient": {"value": "vertical"},
                 "fill": {"value": "lightgrey"},
@@ -1074,7 +1079,7 @@
             "outerRadius": {"scale": "r", "field": "__count"},
             "stroke": {"value": "#fff"}, 
             "tooltip": {
-              "signal": "datum.__count"
+              "signal": "{'Sightings': datum.__count}"
             }
           },
           "update": {
@@ -1086,7 +1091,7 @@
             "outerRadius": {"scale": "r", "field": "__count"},
             "stroke": {"value": "#fff"}, 
             "tooltip": {
-              "signal": "datum.__count"
+              "signal": "{'Sightings': datum.__count}"
             },
             "fill": [
               {
@@ -1121,12 +1126,12 @@
           "update": {
             "x": {"field": {"group": "width"}, "mult": 0.5},
             "y": {"field": {"group": "height"}, "mult": 0.5},
-            "radius": {"scale": "r", "field": "__count", "offset": 15},
+            "radius": {"scale": "r", "field": "__count", "offset": 24},
             "theta": {"signal": "(datum.startAngle + datum.endAngle)/2"},
             "fill": {"value": "#000"},
             "align": {"value": "center"},
             "baseline": {"value": "middle"},
-            "text": {"field": "month"}
+            "text":  {"field": "month_name"} // TRANSLATE TO ACTUAL MONTH
           }
         }
       }
@@ -1228,7 +1233,7 @@
               "innerRadius": {"value": 10},
               "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
               "stroke": {"value": "#fff"},
-              "tooltip": {"signal": "datum.no_of_reports_containing_word"}
+              "tooltip": {"signal": "{'Sightings': datum.no_of_reports_containing_word}"}
             },
             "update": {
             "fill": [
