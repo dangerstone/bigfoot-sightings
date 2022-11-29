@@ -3,6 +3,7 @@
   "height": 1000,
   "width": 1800,
   "padding": 5,
+  //"background": "grey",
 
   "title": {
     "text": "Bigfoot Sightings in North America",
@@ -357,7 +358,8 @@
           "x": {"value": 1},
           "y": {"value": 80}, 
           "width": {"signal": "map_width"},
-          "height": {"signal": "map_height"}
+          "height": {"signal": "map_height"},
+          
         }
       },
       "title": {
@@ -386,7 +388,7 @@
               "name": "color",
               "type": "ordinal",
               "domain": {"data": "sightings", "field": "classification"},
-              "range": {"scheme": "blues"},
+              "range": {"scheme": "purples"},
               "reverse": true
           },
           {
