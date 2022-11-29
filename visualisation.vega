@@ -326,6 +326,9 @@
         }
       }
     },
+    /* ---------------------
+      ----------MAP------------
+      --------------------- */
     {
       "type": "group",
       "name": "map-graph",
@@ -334,20 +337,32 @@
       "encode": {
         "update": {
           "x": {"value": 1},
-          "y": {"value": 1}, 
+          "y": {"value": 80}, 
           "width": {"signal": "map_width"},
           "height": {"signal": "map_height"}
         }
       },
-      /* ---------------------
-      ----------MAP------------
-      --------------------- */
       "title": {
         "text": "Map of sightings",
         "frame": "group"
       },
       "data": [        ],
       "projections": [        ],
+      "legends": [
+        {
+          "title": "Classification",
+          //"size": "size",
+          //"stroke": "color",
+          "shape": "shape",
+          "fill": "color"//,
+          //"orient":"left"
+        },
+        {
+          "title": "No. of sightings",
+          "stroke": "sightings"//,
+          //"orient":"left"
+        }
+      ],
       "scales": [
           {
               "name": "color",
@@ -498,6 +513,9 @@
         }
       ]
     },
+    /* ---------------------
+      ----------TIMELINE------------
+      --------------------- */
     {
       "type": "group",
       "name": "timeline-graph",
@@ -506,7 +524,7 @@
       "encode": {
         "update": {
           "x": {"value": 1},
-          "y": {"signal": "map_height"}, 
+          "y": {"value": 930},//{"signal": "map_height"}, 
           "width": {"signal": "timeline_width"},
           "height": {"signal": "timeline_height"}
         }
@@ -991,13 +1009,16 @@
           }
         ]
     },
+    /* ---------------------
+      ----------MONTHLY------------
+      --------------------- */
     {
       "type": "group",
       "name": "monthly-graph",
       "align": "right",
       "encode": {
         "update": {
-          "x": {"signal": "map_width"},
+          "x": {"value": 1500},//{"signal": "map_width"},
           "y": {"value": 1},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
@@ -1140,6 +1161,9 @@
         }
       ]
     },
+    /* ---------------------
+      ----------TOD------------
+      --------------------- */
     {
       "type": "group",
       "name": "keywords-graph",
@@ -1147,8 +1171,8 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"signal": "map_width"},
-          "y": {"signal": "monthly_height"},
+          "x": {"value": 1500},//{"signal": "map_width"},
+          "y": {"value": 630},// {"signal": "monthly_height"},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
         }
