@@ -259,9 +259,17 @@
           { "type": "lookup", "from": "data_source", "key": "ansi_code", "fields": ["id"], "values": ["name"]}, 
           { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "name"], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
         ]
-        
+      },
   
-  
+      {
+        "name": "marks_table_idk",
+        "source": ["sightings"],
+        "transform": [
+          {
+            "type": "filter",
+            "expr": "Show_individual_sightings === true"
+          }
+        ]
       }
     ],
     
@@ -297,6 +305,11 @@
       {
         "name": "Map_view", "value": "states",
         "bind": {"input": "radio", "options": ["states", "counties"]}
+      },
+      {
+        "name": "Show_individual_sightings", 
+        "value": true, 
+        "bind": {"input": "checkbox"}
       },
       {"name": "map_height", "value": 800},
       {"name": "map_width", "value": 1400},
@@ -449,7 +462,7 @@
             {
               "type": "symbol",
               "style": ["point"],
-              "from": {"data": "sightings"},
+              "from": {"data": "marks_table_idk"},//{"data": "sightings"},
               //"interactive": false,
               "encode": {
                 "enter": {
