@@ -17,17 +17,27 @@
   },
   "data": [
     
-    {"name": "state_brush_store"},
+    {"name": "state_or_county_brush_store"},
     {"name": "timeline_brush_store"},
     {"name": "month_brush_store"},
     {"name": "tod_brush_store"},
     {
+      "name": "ansi",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/main/data/misc/ansi.csv",
+      "format": {"type": "csv", "parse": {"state_ansi_code": "number", "county_ansi_code": "number"}}
+    },
+    {
       "name": "data_source",
       "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
       "format": {
-        "type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string", "month": "number"
+        "type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "county_ansi_code": "number", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string", "month": "number"
         }
-      }
+      },
+      "transform": [
+        // add name and ansi_code column (real dumb)
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "as": ["ansi_code"]},
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["name"]}
+      ]
     },
 
     {
@@ -60,12 +70,12 @@
       "transform": [{"type": "collect", "sort":{"field":"id"}}, {"type": "pie"}]
     },
     {
-      "name": "brushed_data",
+      "name": "filtered_data",
       "source": "classification-store",
       "transform": [
         {
           "type": "filter",
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)"
         },
         {
           "type": "filter",
@@ -83,7 +93,7 @@
     },
   
     {
-      "name": "brushed_data_for_states",
+      "name": "filtered_data_for_map",
       "source": "classification-store",
       "transform": [
         {
@@ -98,7 +108,7 @@
     },
 
     {
-      "name": "brushed_data_for_timeline",
+      "name": "filtered_data_for_timeline",
       "source": "classification-store",
       "transform": [
         {
@@ -107,13 +117,13 @@
         },
         {
           "type": "filter",
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
+          "expr": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)"
         }
       ]
     },
 
     {
-      "name": "brushed_data_for_monthly",
+      "name": "filtered_data_for_monthly",
       "source": "classification-store",
       "transform": [
         {
@@ -122,31 +132,9 @@
         },
         {
           "type": "filter",
-          "expr": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)"
-        }
-      ]
-    },  
-
-    {"name": "highlight_store"}, // delete?
-    {
-      "name": "source_0",
-      "source": "brushed_data_for_monthly",
-      "format": {"type": "csv", "parse": {
-        "observed": "string",
-        "location_details": "string",
-        "county": "string",
-        "state": "string",
-        "season": "string",
-        "title": "string",
-        "latitude": "number",
-        "longitude": "number",
-        "date": "date",
-        "number": "number",
-        "classification": "string", 
-        "month": "number"
-      }, "delimiter": ","},
-      "transform": [
-                  {
+          "expr": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)"
+        },
+        {
           "type": "filter",
           "expr": "datum.date != null"
         },
@@ -164,9 +152,9 @@
         {"type": "identifier", "as": "_vgsid_"}, 
         {"type": "pie"}
       ]
-    },
+    },  
     {
-      "name": "states",
+      "name": "states", // delete?
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
@@ -177,14 +165,9 @@
       ]
     },
     {
-      "name": "state-labels",
-      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/vega-map/data/misc/state-labels.csv",
-      "format": {"type": "csv", "parse": {"id": "number","stub": "string","state": "string","code": "number"}}
-    },
-    {
       "name": "sightings", 
-      "source": "brushed_data_for_states", // "brushed_data",
-      "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
+      "source": "filtered_data_for_map",
+      "format": {"type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "state": "string", "state_ansi_code": "number", "county_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string"}},
       "transform": [
         {
           "type": "geopoint",
@@ -198,43 +181,87 @@
         {
           "type": "collect",
           "sort": {"field": "classification"}
-        }/*,
-        {
-          "type": "project", "fields":["state_ansi_code"], "as": ["id"]
-        }*/
+        }
       ]
     }, 
     {
-      "name": "spots",
-      "source": ["sightings", "states"],
+      "name": "state_no_of_sightings",
+      "source": ["sightings"],
       "transform": [
         {
           "type": "aggregate", 
-          "groupby": ["state"],
-          "fields": ["number"], "ops": ["count"], "as": ["spots"]
-        },
-        { "type": "lookup", "from": "state-labels", "key": "state", "fields": ["state"], "values": ["id"]}, 
-        { "type": "filter", "expr": "datum.state != null" }
+          "groupby": ["state_ansi_code"],
+          "fields": ["number"], 
+          "ops": ["count"], 
+          "as": ["no_of_sightings"]
+        }
       ]
     },
     {
-      "name": "state-sightings",
+      "name": "state_map_data",
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
-        { "type": "lookup", "from": "spots", "key": "id", "fields": ["id"], "values": ["spots"], "default": 0}
-        ,
+        { "type": "lookup", "from": "state_no_of_sightings", "key": "state_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
+        { "type": "lookup", "from": "ansi", "key": "state_ansi_code", "fields": ["id"], "values": ["state"]},
         {
-          "type": "project", "fields":["type", "id", "properties", "geometry", "spots"], "as": ["type", "state_ansi_code", "properties", "geometry", "spots"]
-        }, 
-        {
-          "type": "collect",
-          "sort": {
-            "field": ["spots"],
-            "order": ["descending"]
-          }
+          "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "state"], "as": ["type", "state_ansi_code", "properties", "geometry", "no_of_sightings", "state"]
         }
       ]
+    },
+
+    {
+      "name": "county_no_of_sightings",
+      "source": ["sightings"],
+      "transform": [
+        {
+          "type": "aggregate", 
+          "groupby": ["county_ansi_code"],
+          "fields": ["number"], 
+          "ops": ["count"], 
+          "as": ["no_of_sightings"]
+        }
+      ]
+    },
+
+    {
+      "name": "county_map_data", 
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": "counties"},
+      "transform": [
+        { "type": "lookup", "from": "county_no_of_sightings", "key": "county_ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
+        { "type": "lookup", "from": "ansi", "key": "county_ansi_code", "fields": ["id"], "values": ["county"]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "county"], "as": ["type", "county_ansi_code", "properties", "geometry", "no_of_sightings", "county"] }
+      ]
+    },
+
+    {
+      "name": "state_or_county_no_of_sightings",
+      "source": ["sightings"],
+      "transform": [
+        {
+          "type": "aggregate", 
+          "groupby": ["ansi_code"],
+          "fields": ["number"], 
+          "ops": ["count"], 
+          "as": ["no_of_sightings"]
+        }
+
+      ]
+    },
+
+    {
+      "name": "map_data",
+      "url": "https://vega.github.io/editor/data/us-10m.json",
+      "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
+      "transform": [
+        { "type": "lookup", "from": "state_or_county_no_of_sightings", "key": "ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
+        { "type": "lookup", "from": "data_source", "key": "ansi_code", "fields": ["id"], "values": ["name"]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "name"], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
+      ]
+      
+
+
     }
   ],
   
@@ -246,6 +273,11 @@
       "translate": [{"signal": "map_width / 2"}, {"signal": "map_height / 2"}]
     }
   ],
+
+
+
+
+
   "signals": [
     {
       "name": "Class_A_selected", 
@@ -261,6 +293,10 @@
       "name": "Class_C_selected", 
       "value": true, 
       "bind": {"input": "checkbox"}
+    },
+    {
+      "name": "Map_view", "value": "states",
+      "bind": {"input": "radio", "options": ["states", "counties"]}
     },
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
@@ -303,6 +339,9 @@
           "height": {"signal": "map_height"}
         }
       },
+      /* ---------------------
+      ----------MAP------------
+      --------------------- */
       "title": {
         "text": "Map of sightings",
         "frame": "group"
@@ -320,7 +359,7 @@
           {
               "name": "sightings",
               "type": "quantize",
-              "domain": {"data": "state-sightings", "field": "spots"},//[0, 550],
+              "domain": {"data": "map_data", "field": "no_of_sightings"},
               "range": {"scheme": "yellowgreen", "count": 50}//,
               //"reverse": true
           },
@@ -333,13 +372,13 @@
           {
             "name": "size",
             "type": "point",
-            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "domain": {"data": "sightings", "field": "classification"}, 
             "range": [50, 25]
           },
           {
             "name": "shape",
             "type": "ordinal",
-            "domain": {"data": "sightings", "field": "classification"}, //["Class A, Class B, Class C"]
+            "domain": {"data": "sightings", "field": "classification"}, 
             "range": ["circle", "diamond", "triangle"]
           }
       ],
@@ -360,30 +399,31 @@
           },
           {
             "type": "shape",
-            "from": {"data": "state-sightings"},
+            "from": {"data": "map_data"},
             "encode": {
-              "enter": { 
-                "tooltip": {"signal": "datum.spots"}
-              },
               "update": { 
                 "fill": [
-                  {"test": "datum.spots === 0", "value": "#ededed"}, 
-                  {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots"}, 
-                  {"scale": "deselected-sightings", "field": "spots"}], 
-                "fillOpacity": [ {"test": "!length(data(\"state_brush_store\")) || vlSelectionTest(\"state_brush_store\", datum)", "value": 1 },
+                  {"test": "datum.no_of_sightings === 0", "value": "#ededed"}, 
+                  {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"}, 
+                  {"scale": "deselected-sightings", "field": "no_of_sightings"}], 
+                "fillOpacity": [ 
+                  {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 1 },
                   {"value": 0.5}
                 ],
                 "stroke": {"value": "grey"},
                 "strokeWidth": {"value": 0.25},
-                "tooltip": {"signal": "datum.spots"}
+                "tooltip": {"signal": "{'title': datum.name, 'Sightings': datum.no_of_sightings}"}
               },
               "hover": {
-                "fill": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "scale": "sightings", "field": "spots" },
-                {"test": "!length(data(\"state_brush_store\"))", "value": "#134504" },
-                  {"scale": "sightings", "field": "spots"}
+                "fill": [ 
+                  {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings" },
+                  {"test": "!length(data(\"state_or_county_brush_store\"))", "value": "#134504" },
+                  {"scale": "sightings", "field": "no_of_sightings"}
                 ],
-                "fillOpacity": [ {"test": "vlSelectionTest(\"state_brush_store\", datum)", "value": 0.3 },
-                  {"value": 1}]
+                "fillOpacity": [ 
+                  {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 0.3 },
+                  {"value": 1}
+                ]
                 
               }
             },
@@ -395,45 +435,43 @@
             "type": "symbol",
             "style": ["point"],
             "from": {"data": "sightings"},
+            "interactive": false,
             "encode": {
               "enter": {
-              // "size": {"value": 10},
-              
               "tooltip": {
                 "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
                   }
               },
               "update": {
                 "fill": {"scale": "color", "field": "classification"},
-                "fillOpacity": {"value": 0.7},
-                // "strokeWidth": {"value": 1}, 
+                "fillOpacity": {"value": 0.1},
                 "x": {"field": "x"},
                 "y": {"field": "y"},
                 "size": {"scale": "size", "field": "classification"},
                 "shape": {"scale": "shape", "field": "classification"}
-              }, 
-              "hover": { }
-          }
-        }    
+              }
+            }
+        }
       ],
       "signals": [
         {
           "name" : "select",
-          "update": "vlSelectionResolve(\"state_brush_store\", \"union\", true, true)"
+          "update": "vlSelectionResolve(\"state_or_county_brush_store\", \"union\", true, true)" 
         },
         {
           "name": "select_tuple_fields",
-          "value": [{"type": "E", "field": "state_ansi_code"}]
+          "value": [{"type": "E", "field": "ansi_code"}]
         },
         {
           "name": "select_tuple",
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update":  "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null", 
               "force": true
             },
-            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"}
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "null"},
+            {"events": [{"source": "#vis > div > form > div:nth-child(4) > span.vega-bind-radio", "type": "click"}], "update": "null"}
           ]
         },
         {
@@ -442,10 +480,11 @@
           "on": [
             {
               "events": [{"source": "scope", "type": "click"}],
-              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"state_ansi_code\"]]} : null",
+              "update": "datum && item().mark.marktype !== 'group' ? {unit: \"\", fields: select_tuple_fields, values: [(item().isVoronoi ? datum.datum : datum)[\"ansi_code\"]]} : null",
               "force": false
             },
-            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"}
+            {"events": [{"source": "view", "type": "dblclick"}], "update": "false"},
+            {"events": [{"source": "#vis > div > form > div:nth-child(4) > span.vega-bind-radio", "type": "click"}], "update": "false"}
           ]
         },
         {
@@ -453,7 +492,7 @@
           "on": [
             {
               "events": {"signal": "select_tuple"},
-              "update": "modify(\"state_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
+              "update": "modify(\"state_or_county_brush_store\", select_toggle ? null : select_tuple, select_toggle ? null : true, select_toggle ? select_tuple : null)"
             }
           ]
         }
@@ -478,7 +517,7 @@
       },
 
         "data": [
-          {"name": "timeline_data_raw", 
+          {"name": "timeline_data_unfiltered", 
           "source": "classification-store",
           "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
             "transform": [
@@ -503,7 +542,7 @@
           },
           {
             "name": "timeline_data",
-            "source": "brushed_data_for_timeline",
+            "source": "filtered_data_for_timeline",
             "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
             "transform": [
               {
@@ -519,7 +558,7 @@
             ]
           },
           {
-            "name": "data_0",
+            "name": "timeline_data_selected",
             "source": "timeline_data",
             "transform": [
               {
@@ -536,7 +575,7 @@
             ]
           },
           {
-            "name": "data_1",
+            "name": "timeline_data_unselected",
             "source": "timeline_data",
             "transform": [
               {
@@ -762,12 +801,12 @@
             }
           },
           {
-            "name": "layer_bg_marks",
+            "name": "timeline_marks_unfiltered",
             "type": "area",
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": true,
-            "from": {"data": "timeline_data_raw"},
+            "from": {"data": "timeline_data_unfiltered"},
             "encode": {
               "update": {
                 "tooltip": {
@@ -788,12 +827,12 @@
             }
           },
           {
-            "name": "layer_0_marks",
+            "name": "timeline_marks_unselected",
             "type": "area",
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": true,
-            "from": {"data": "data_1"},
+            "from": {"data": "timeline_data_unselected"},
             "encode": {
               "update": {
                 "tooltip": {
@@ -814,12 +853,12 @@
             }
           },
           {
-            "name": "layer_1_marks",
+            "name": "timeline_marks_selected",
             "type": "area",
             "style": ["area"],
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": false,
-            "from": {"data": "data_0"},
+            "from": {"data": "timeline_data_selected"},
             "encode": {
               "update": {
                 "orient": {"value": "vertical"},
@@ -885,8 +924,8 @@
             "type": "time",
             "domain": {
               "fields": [
-                {"data": "data_1", "field": "year_date"},
-                {"data": "data_0", "field": "year_date"}
+                {"data": "timeline_data_unselected", "field": "year_date"},
+                {"data": "timeline_data_selected", "field": "year_date"}
               ]
             },
             "range": [0, {"signal": "timeline_width"}]
@@ -975,14 +1014,14 @@
         {
         "name": "r",
         "type": "linear",
-        "domain": {"data": "source_0", "field": "__count"},
+        "domain": {"data": "filtered_data_for_monthly" , "field": "__count"},
         "zero": true,
         "range": [25, 150]
         },
         {
         "name": "color",
         "type": "ordinal",
-        "domain": {"data": "source_0", "field": "__count"},
+        "domain": {"data": "filtered_data_for_monthly" , "field": "__count"},
         "range": ["green"], 
         "reverse": false
         }
@@ -990,7 +1029,7 @@
       "marks": [
         {
         "type": "arc",
-        "from": {"data": "source_0"},
+        "from": {"data": "filtered_data_for_monthly" },
         "encode": {
           "enter": {
             "x": {"field": {"group": "width"}, "mult": 0.5},
@@ -1040,7 +1079,7 @@
         }, 
       {
         "type": "text",
-        "from": {"data": "source_0"},
+        "from": {"data": "filtered_data_for_monthly" },
         "encode": {
           "enter": {
 
