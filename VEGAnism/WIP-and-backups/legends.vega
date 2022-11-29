@@ -351,8 +351,10 @@
         "legends": [
           {
             "title": "Classification",
-            "size": "size",
-            "stroke": "color"
+            //"size": "size",
+            //"stroke": "color",
+            "shape": "shape",
+            "fill": "color"
           },
           {
             "title": "No. of sightings",
