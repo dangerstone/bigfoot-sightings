@@ -842,6 +842,7 @@
             "name": "timeline_marks_unfiltered",
             "type": "area",
             "style": ["area"],
+            "clip": true,
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": true,
             "from": {"data": "timeline_data_unfiltered"},
@@ -868,6 +869,7 @@
             "name": "timeline_marks_unselected",
             "type": "area",
             "style": ["area"],
+            "clip": true,
             "sort": {"field": "datum[\"year_date\"]"},
             "interactive": true,
             "from": {"data": "timeline_data_unselected"},
@@ -894,11 +896,15 @@
             "name": "timeline_marks_selected",
             "type": "area",
             "style": ["area"],
+            "clip": true,
             "sort": {"field": "datum[\"year_date\"]"},
-            "interactive": false,
+            "interactive": true,
             "from": {"data": "timeline_data_selected"},
             "encode": {
               "update": {
+                "tooltip": {
+                  "signal": "{'Year': timeFormat(datum.year_date, '%Y'), 'Sightings': datum.__count}"
+                },
                 "orient": {"value": "vertical"},
                 "fill": {"value": "green"},
                 "description": {
