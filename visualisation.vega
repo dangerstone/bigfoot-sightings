@@ -387,7 +387,7 @@
           {
               "name": "color",
               "type": "ordinal",
-              "domain": {"data": "sightings", "field": "classification"},
+              "domain": ["Class A", "Class B", "Class C"],//{"data": "sightings", "field": "classification"},
               "range": {"scheme": "purples"},
               "reverse": true
           },
@@ -407,13 +407,13 @@
           {
             "name": "size",
             "type": "point",
-            "domain": {"data": "sightings", "field": "classification"}, 
+            "domain": ["Class A", "Class B", "Class C"], //{"data": "sightings", "field": "classification"}, 
             "range": [50, 25]
           },
           {
             "name": "shape",
             "type": "ordinal",
-            "domain": {"data": "sightings", "field": "classification"}, 
+            "domain": ["Class A", "Class B", "Class C"],//{"data": "sightings", "field": "classification"}, 
             "range": ["circle", "diamond", "triangle"]
           }
       ],
