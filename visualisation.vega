@@ -377,7 +377,8 @@
         },
         {
           "title": "No. of sightings",
-          "stroke": "sightings"//,
+          "stroke": "sightings",
+          "labelSeparation": 45//,
           //"orient":"left"
         }
       ],
