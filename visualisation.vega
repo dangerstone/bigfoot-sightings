@@ -437,11 +437,13 @@
             "encode": {
               "update": { 
                 "fill": [
-                  {"test": "datum.no_of_sightings === 0 && (!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum))", "value":"#f4fce1"}, // "#ededed"}, 
-                  {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"}, 
+                  {"test": "datum.no_of_sightings === 0 && (!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum))", "value":"#f4fce1"}, 
+                  {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"},
+                  {"test": "datum.no_of_sightings === 0", "value": "#fafafa"},
                   {"scale": "deselected-sightings", "field": "no_of_sightings"}], 
                 "fillOpacity": [ 
                   {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 1 },
+                  {"test": "Map_view === 'counties' && (!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum))", "value": 0.7 },
                   {"value": 0.5}
                 ],
                 "stroke": {"value": "grey"},
@@ -450,9 +452,9 @@
               },
               "hover": {
                 "fill": [ 
-                  {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings" },
                   {"test": "!length(data(\"state_or_county_brush_store\"))", "value": "#134504" },
-                  {"scale": "sightings", "field": "no_of_sightings"}
+                  {"value": "#134504"}
+                  //{"scale": "sightings", "field": "no_of_sightings"}
                 ],
                 "fillOpacity": [ 
                   {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 0.3 },
