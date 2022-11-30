@@ -1,4 +1,14 @@
-/* Copy this into a <style></style> block in the .html-file in the head */
+/* Copy this CSS code into a <style></style> block in the .html-file in the head 
+    and replace <div id="vis" /> with this:
+    <div class="container">
+      <div id="vis" />
+    </div>
+
+*/
+.container {
+  display: flex;
+  justify-content: center;
+}
 .vega-bindings {
   position: absolute;
   left: 70px;
