@@ -3,7 +3,7 @@
   "height": 1000,
   "width": 1800,
   "padding": 30,
-  "background": "#ededed",
+  "background": "white",
 
   "title": {
     "text": "Bigfoot Sightings in North America",
@@ -334,7 +334,6 @@
     {
       "type": "group",
       "name": "toolbar",
-      "style": "cell",
       "align": "left",
       "encode": {
         "update": {
@@ -351,7 +350,6 @@
     {
       "type": "group",
       "name": "map-graph",
-      "style": "cell",
       "align": "left",
       "encode": {
         "update": {
@@ -539,7 +537,6 @@
     {
       "type": "group",
       "name": "timeline-graph",
-      "style": "cell",
       "align": "left",
       "encode": {
         "update": {
@@ -1193,7 +1190,6 @@
     {
       "type": "group",
       "name": "keywords-graph",
-      "style": "cell",
       "align": "right",
       "encode": {
         "update": {
