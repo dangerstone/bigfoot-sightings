@@ -14,9 +14,34 @@
         left: 70px;
         top: 70px;
         display: flex;
+        gap: 30px;
+        font-family: sans-serif;
       }
       .vega-bind {
-        margin-right: 25px;
+        display: flex;
+        gap: 10px;
+      }
+      .vega-bind-radio {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      #vis > div > form > div > span.vega-bind-radio > label {
+        display: flex;
+        align-items: center;
+      }
+      #vis > div > form > div > span.vega-bind-radio > label > input {
+        /* radio butts */
+        display: flex;
+        align-items: center; /* worketh not*/
+      }
+      #vis > div > form > div > label,
+      .vega-bind-name {
+        display: flex;
+        gap: 10px;
+        font-weight: bold;
+        font-size: medium;
+        align-items: center;
       }
     </style>
   </head>
