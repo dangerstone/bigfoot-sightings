@@ -262,8 +262,8 @@
       "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
       "transform": [
         { "type": "lookup", "from": "state_or_county_no_of_sightings", "key": "ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "data_source", "key": "ansi_code", "fields": ["id"], "values": ["name"]}, 
-        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", "name"], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", {"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
       ]
     },
 
