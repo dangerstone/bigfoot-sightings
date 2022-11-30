@@ -36,8 +36,8 @@
       },
       "transform": [
         // add name and ansi_code column (real dumb)
-        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "as": ["ansi_code"]},
-        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["name"]}
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_style === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_style === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_style === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "as": ["ansi_code"]},
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_style === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": [{"signal": "Map_style === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}], "values": [{"signal": "Map_style === 'states' ? 'state' : 'county'"}], "as": ["name"]}
       ]
     },
 
@@ -47,15 +47,15 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "if(Class_A_selected==false,datum.classification != 'Class A',datum)"
+          "expr": "if(Class_A==false,datum.classification != 'Class A',datum)"
         },
         {
           "type": "filter",
-          "expr": "if(Class_B_selected==false,datum.classification != 'Class B',datum)"
+          "expr": "if(Class_B==false,datum.classification != 'Class B',datum)"
         },
         {
           "type": "filter",
-          "expr": "if(Class_C_selected==false,datum.classification != 'Class C',datum)"
+          "expr": "if(Class_C==false,datum.classification != 'Class C',datum)"
         }
         /*, 
         {
@@ -259,11 +259,11 @@
     {
       "name": "map_data",
       "url": "https://vega.github.io/editor/data/us-10m.json",
-      "format": {"type": "topojson", "feature": {"signal": "Map_view"}},
+      "format": {"type": "topojson", "feature": {"signal": "Map_style"}},
       "transform": [
         { "type": "lookup", "from": "state_or_county_no_of_sightings", "key": "ansi_code", "fields": ["id"], "values": ["no_of_sightings"], "default": 0},
-        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_view === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": ["id"], "values": [{"signal": "Map_view === 'states' ? 'state' : 'county'"}]}, 
-        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", {"signal": "Map_view === 'states' ? 'state' : 'county'"}], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
+        { "type": "lookup", "from": "ansi", "key": {"signal": "Map_style === 'states' ? 'state_ansi_code' : 'county_ansi_code'"}, "fields": ["id"], "values": [{"signal": "Map_style === 'states' ? 'state' : 'county'"}]}, 
+        { "type": "project", "fields":["type", "id", "properties", "geometry", "no_of_sightings", {"signal": "Map_style === 'states' ? 'state' : 'county'"}], "as": ["type", "ansi_code", "properties", "geometry", "no_of_sightings", "name"] }
       ]
     },
 
@@ -273,7 +273,7 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "Show_individual_sightings === true"
+          "expr": "Display_points === true"
         }
       ]
     }
@@ -294,26 +294,26 @@
 
   "signals": [
     {
-      "name": "Class_A_selected", 
+      "name": "Class_A", 
       "value": true, 
       "bind": {"input": "checkbox"}
     },
     {
-      "name": "Class_B_selected", 
+      "name": "Class_B", 
       "value": true, 
       "bind": {"input": "checkbox"}
     },
     {
-      "name": "Class_C_selected", 
+      "name": "Class_C", 
       "value": true, 
       "bind": {"input": "checkbox"}
     },
     {
-      "name": "Map_view", "value": "states",
+      "name": "Map_style", "value": "states",
       "bind": {"input": "radio", "options": ["states", "counties"]}
     },
     {
-      "name": "Show_individual_sightings", 
+      "name": "Display_points", 
       "value": true, 
       "bind": {"input": "checkbox"}
     },
@@ -443,7 +443,7 @@
                   {"scale": "deselected-sightings", "field": "no_of_sightings"}], 
                 "fillOpacity": [ 
                   {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 1 },
-                  {"test": "Map_view === 'counties' && (!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum))", "value": 0.7 },
+                  {"test": "Map_style === 'counties' && (!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum))", "value": 0.7 },
                   {"value": 0.5}
                 ],
                 "stroke": {"value": "grey"},
