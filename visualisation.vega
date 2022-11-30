@@ -470,7 +470,7 @@
           {
             "type": "symbol",
             "style": ["point"],
-            "from": {"data": "sightings_symbols_table"},//{"data": "sightings"},
+            "from": {"data": "sightings_symbols_table"},
             //"interactive": false,
             "encode": {
               "enter": {
@@ -480,7 +480,7 @@
               },
               "update": {
                 "fill": {"scale": "color", "field": "classification"},
-                "fillOpacity": {"value": 0.5},
+                "fillOpacity": {"value": 0.7},
                 "x": {"field": "x"},
                 "y": {"field": "y"},
                 "size": {"scale": "size", "field": "classification"},
