@@ -437,7 +437,7 @@
             "encode": {
               "update": { 
                 "fill": [
-                  {"test": "datum.no_of_sightings === 0", "value":"#f4fce1"}, // "#ededed"}, 
+                  {"test": "datum.no_of_sightings === 0 && (!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum))", "value":"#f4fce1"}, // "#ededed"}, 
                   {"test": "!length(data(\"state_or_county_brush_store\")) || vlSelectionTest(\"state_or_county_brush_store\", datum)", "scale": "sightings", "field": "no_of_sightings"}, 
                   {"scale": "deselected-sightings", "field": "no_of_sightings"}], 
                 "fillOpacity": [ 
