@@ -475,7 +475,7 @@
             "encode": {
               "enter": {
               "tooltip": {
-                "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county}"
+                "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county, 'Weather': datum.weather_summary, 'Conditions': datum.time_and_conditions, 'Location': datum.location_details}"
                   }
               },
               "update": {

@@ -1,0 +1,10 @@
+/* Copy this into a <style></style> block in the .html-file in the head */
+.vega-bindings {
+  position: absolute;
+  left: 70px;
+  top: 70px;
+  display: flex;
+}
+.vega-bind {
+  margin-right: 25px;
+}
