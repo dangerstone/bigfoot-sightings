@@ -296,26 +296,26 @@
     {
       "name": "Class_A", 
       "value": true, 
-      "bind": {"input": "checkbox"}
+      "bind": {"name": "Class A", "input": "checkbox"}
     },
     {
       "name": "Class_B", 
       "value": true, 
-      "bind": {"input": "checkbox"}
+      "bind": {"name": "Class B", "input": "checkbox"}
     },
     {
       "name": "Class_C", 
       "value": true, 
-      "bind": {"input": "checkbox"}
+      "bind": {"name": "Class C", "input": "checkbox"}
     },
     {
       "name": "Map_style", "value": "states",
-      "bind": {"input": "radio", "options": ["states", "counties"]}
+      "bind": {"name": "Map style", "input": "radio", "options": ["states", "counties"]}
     },
     {
       "name": "Display_points", 
       "value": true, 
-      "bind": {"input": "checkbox"}
+      "bind": {"name": "Display points", "input": "checkbox"}
     },
     {"name": "map_height", "value": 800},
     {"name": "map_width", "value": 1400},
