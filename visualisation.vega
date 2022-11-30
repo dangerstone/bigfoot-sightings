@@ -801,12 +801,19 @@
         ],
         "marks": [
           {
-            "name": "brush_brush_bg",
+            "name": "brush_brush",
             "type": "rect",
             "clip": true,
             "encode": {
-              "enter": {"fill": {"value": "#333"}, "fillOpacity": {"value": 0.3}},
+              "enter": {
+                "fill": {"value": "#b5b4d5"}, 
+                "fillOpacity": {"value": 0.09}
+                },
               "update": {
+                "stroke": [
+                  {"test": "brush_x[0] !== brush_x[1]", "value": "transparent"},//"black"},
+                  {"value": null}
+                ],
                 "x": [
                   {
                     "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
@@ -831,7 +838,7 @@
                 "y2": [
                   {
                     "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                    "field": {"group": "timeline_height"}
+                    "field": {"group": "height"}
                   },
                   {"value": 0}
                 ]
@@ -916,48 +923,6 @@
                 "defined": {
                   "signal": "isValid(datum[\"year_date\"]) && isFinite(+datum[\"year_date\"]) && isValid(datum[\"__count\"]) && isFinite(+datum[\"__count\"])"
                 }
-              }
-            }
-          },
-          {
-            "name": "brush_brush",
-            "type": "rect",
-            "clip": true,
-            "encode": {
-              "enter": {"fill": {"value": "transparent"}},
-              "update": {
-                "x": [
-                  {
-                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                    "signal": "brush_x[0]"
-                  },
-                  {"value": 0}
-                ],
-                "y": [
-                  {
-                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                    "value": 0
-                  },
-                  {"value": 0}
-                ],
-                "x2": [
-                  {
-                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                    "signal": "brush_x[1]"
-                  },
-                  {"value": 0}
-                ],
-                "y2": [
-                  {
-                    "test": "data(\"timeline_brush_store\").length && data(\"timeline_brush_store\")[0].unit === \"layer_0\"",
-                    "field": {"group": "height"}
-                  },
-                  {"value": 0}
-                ],
-                "stroke": [
-                  {"test": "brush_x[0] !== brush_x[1]", "value": "black"},
-                  {"value": null}
-                ]
               }
             }
           }
