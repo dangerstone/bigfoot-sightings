@@ -27,6 +27,7 @@ print("Removing irrelevant columns...")
 for col in irrelevant_columns:
     df.pop(col)
 
+df = df[~(df["date"] < "1900-01-01")]
 
 # --- adding more columns
 print("Adding in time_and_conditions from second table...")
