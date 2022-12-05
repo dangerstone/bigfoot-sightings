@@ -1018,8 +1018,8 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"value": 1500},//{"signal": "map_width"},
-          "y": {"value": 1},
+          "x": {"value": 1530},//{"signal": "map_width"},
+          "y": {"value": 80},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
         }
@@ -1171,8 +1171,8 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"value": 1500},//{"signal": "map_width"},
-          "y": {"value": 630},// {"signal": "monthly_height"},
+          "x": {"value": 1530},//{"signal": "map_width"},
+          "y": {"value": 710},// {"signal": "monthly_height"},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
         }
