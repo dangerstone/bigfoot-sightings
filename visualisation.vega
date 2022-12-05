@@ -29,7 +29,7 @@
     },
     {
       "name": "data_source",
-      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
+      "url": "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/main/data/bfro_reports_geocoded.csv",
       "format": {
         "type": "csv", "parse": {"observed": "string", "location_details": "string", "county": "string", "county_ansi_code": "number", "state": "string", "state_ansi_code": "number", "season": "string", "title": "string", "latitude": "number", "longitude": "number", "date": "date", "number": "number", "classification": "string", "month": "number"
         }
@@ -57,11 +57,6 @@
           "type": "filter",
           "expr": "if(Class_C==false,datum.classification != 'Class C',datum)"
         }
-        /*, 
-        {
-          "type": "collect",
-          "sort": {"field": "classification"}
-        }*/
       ]
     },
     {
@@ -155,12 +150,11 @@
           "expr": "monthAbbrevFormat(datum.month-1)",
           "as": "month_name"
         },
-        // {"type": "identifier", "as": "_vgsid_"}, 
         {"type": "pie"}
       ]
     },  
     {
-      "name": "states", // delete?
+      "name": "states", 
       "url": "https://vega.github.io/editor/data/us-10m.json",
       "format": {"type": "topojson", "feature": "states"},
       "transform": [
@@ -314,7 +308,7 @@
     },
     {
       "name": "Display_points", 
-      "value": true, 
+      "value": false, 
       "bind": {"name": "Display points", "input": "checkbox"}
     },
     {"name": "map_height", "value": 800},
@@ -361,10 +355,9 @@
         }
       },
       "title": {
-        "text": "Map of sightings",
+        "text": "Map of Sightings",
         "frame": "group",
-        "fontSize": {"value": 20},
-        //"color": {"value": "darkgreen"}
+        "fontSize": {"value": 20}
       },
       "data": [        ],
       "projections": [        ],
@@ -372,29 +365,25 @@
         {
           "title": "Classification",
           "titleFontSize": 15,
-          "titleFontWeight": {"value": "bold"},
+          "titleFontWeight": {"value": "normal"},
           "labelFontSize": 10,
-          //"size": "size",
-          //"stroke": "color",
           "shape": "shape",
-          "fill": "color"//,
-          //"orient":"left"
+          "fill": "color"
         },
         {
           "title": "No. of sightings",
           "titleFontSize": {"value": 15},
-          "titleFontWeight": {"value": "bold"},
+          "titleFontWeight": {"value": "normal"},
           "labelFontSize": {"value": 10},
           "stroke": "sightings",
-          "labelSeparation": 45//,
-          //"orient":"left"
+          "labelSeparation": 45
         }
       ],
       "scales": [
           {
               "name": "color",
               "type": "ordinal",
-              "domain": ["Class A", "Class B", "Class C"],//{"data": "sightings", "field": "classification"},
+              "domain": ["Class A", "Class B", "Class C"],
               "range": {"scheme": "purples"},
               "reverse": true
           },
@@ -402,8 +391,7 @@
               "name": "sightings",
               "type": "quantize",
               "domain": {"data": "map_data", "field": "no_of_sightings"},
-              "range": {"scheme": "yellowgreen", "count": 50}//,
-              //"reverse": true
+              "range": {"scheme": "yellowgreen", "count": 50}
           },
           {
               "name": "deselected-sightings",
@@ -414,13 +402,13 @@
           {
             "name": "size",
             "type": "point",
-            "domain": ["Class A", "Class B", "Class C"], //{"data": "sightings", "field": "classification"}, 
+            "domain": ["Class A", "Class B", "Class C"], 
             "range": [50, 25]
           },
           {
             "name": "shape",
             "type": "ordinal",
-            "domain": ["Class A", "Class B", "Class C"],//{"data": "sightings", "field": "classification"}, 
+            "domain": ["Class A", "Class B", "Class C"],
             "range": ["circle", "diamond", "triangle"]
           }
       ],
@@ -462,7 +450,6 @@
                 "fill": [ 
                   {"test": "!length(data(\"state_or_county_brush_store\"))", "value": "#134504" },
                   {"value": "#134504"}
-                  //{"scale": "sightings", "field": "no_of_sightings"}
                 ],
                 "fillOpacity": [ 
                   {"test": "vlSelectionTest(\"state_or_county_brush_store\", datum)", "value": 0.3 },
@@ -479,12 +466,13 @@
             "type": "symbol",
             "style": ["point"],
             "from": {"data": "sightings_symbols_table"},
-            //"interactive": false,
             "encode": {
               "enter": {
               "tooltip": {
                 "signal": "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county, 'Weather': datum.weather_summary, 'Conditions': datum.time_and_conditions, 'Location': datum.location_details}"
-                  }
+                  },
+                "stroke": {"value": "#b5b4d5"},
+                "strokeWidth": {"value": 0.25}
               },
               "update": {
                 "fill": {"scale": "color", "field": "classification"},
@@ -552,26 +540,22 @@
       "encode": {
         "update": {
           "x": {"value": 1},
-          "y": {"value": 930},//{"signal": "map_height"}, 
+          "y": {"value": 950},
           "width": {"signal": "timeline_width"},
           "height": {"signal": "timeline_height"}
         }
       },
       "title": {
         "text": "Timeline of sightings",
-        "fontSize": {"value": 25},
+        "fontSize": {"value": 20},
         "frame": "group"
       },
 
         "data": [
           {"name": "timeline_data_unfiltered", 
-          "source": "data_source",//"classification-store",
+          "source": "data_source",
           "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
             "transform": [
-              {
-                "type": "filter",
-                "expr": "datum.date >= 0"
-              },
               {
                 "field": "date",
                 "type": "timeunit",
@@ -592,10 +576,6 @@
             "source": "filtered_data_for_timeline",
             "format": {"type": "csv", "parse": {"date": "date"}, "delimiter": ","},
             "transform": [
-              {
-                "type": "filter",
-                "expr": "datum.date >= 0"
-              },
               {
                 "field": "date",
                 "type": "timeunit",
@@ -820,7 +800,7 @@
                 },
               "update": {
                 "stroke": [
-                  {"test": "brush_x[0] !== brush_x[1]", "value": "transparent"},//"black"},
+                  {"test": "brush_x[0] !== brush_x[1]", "value": "transparent"},
                   {"value": null}
                 ],
                 "x": [
@@ -1018,14 +998,14 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"value": 1530},//{"signal": "map_width"},
+          "x": {"value": 1530},
           "y": {"value": 80},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
         }
       },
       "title": {
-        "text": "Monthly distribution of sightings",
+        "text": "Sightings by Month",
         "fontSize": {"value": 20},
         "frame": "group"
       }, 
@@ -1171,8 +1151,8 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"value": 1530},//{"signal": "map_width"},
-          "y": {"value": 710},// {"signal": "monthly_height"},
+          "x": {"value": 1530},
+          "y": {"value": 740},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
         }
