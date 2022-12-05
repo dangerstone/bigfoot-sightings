@@ -14,34 +14,25 @@
         left: 70px;
         top: 70px;
         display: flex;
-        gap: 30px;
+        gap: 10px;
         font-family: sans-serif;
       }
       .vega-bind {
         display: flex;
         gap: 10px;
       }
-      .vega-bind-radio {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      #vis > div > form > div > span.vega-bind-radio > label {
-        display: flex;
-        align-items: center;
-      }
-      #vis > div > form > div > span.vega-bind-radio > label > input {
-        /* radio butts */
-        display: flex;
-        align-items: center; /* worketh not*/
-      }
       #vis > div > form > div > label,
       .vega-bind-name {
         display: flex;
-        gap: 10px;
+        gap: 5px;
         font-weight: bold;
         font-size: medium;
         align-items: center;
+      }
+
+      #vis > div > form > div:nth-child(4),
+      #vis > div > form > div:nth-child(5) {
+        padding-left: 30px;
       }
     </style>
   </head>
@@ -57,10 +48,10 @@
         padding: 30,
         background: "white",
         title: {
-          text: "Bigfoot Sightings in North America",
+          text: "Bigfoot Sightings in the US",
           encode: {
             title: {
-              enter: { fill: { value: "darkgreen" }, fontSize: { value: 25 } },
+              enter: { fill: { value: "darkgreen" }, fontSize: { value: 40 } },
             },
           },
         },
@@ -491,7 +482,7 @@
             value: "states",
             bind: {
               name: "Map style",
-              input: "radio",
+              input: "select",
               options: ["states", "counties"],
             },
           },
@@ -535,13 +526,27 @@
                 height: { signal: "map_height" },
               },
             },
-            title: { text: "Map of sightings", frame: "group" },
+            title: {
+              text: "Map of sightings",
+              frame: "group",
+              fontSize: { value: 20 },
+            },
             data: [],
             projections: [],
             legends: [
-              { title: "Classification", shape: "shape", fill: "color" },
+              {
+                title: "Classification",
+                titleFontSize: 15,
+                titleFontWeight: { value: "bold" },
+                labelFontSize: 10,
+                shape: "shape",
+                fill: "color",
+              },
               {
                 title: "No. of sightings",
+                titleFontSize: { value: 15 },
+                titleFontWeight: { value: "bold" },
+                labelFontSize: { value: 10 },
                 stroke: "sightings",
                 labelSeparation: 45,
               },
@@ -759,7 +764,11 @@
                 height: { signal: "timeline_height" },
               },
             },
-            title: { text: "Timeline of sightings", frame: "group" },
+            title: {
+              text: "Timeline of sightings",
+              fontSize: { value: 25 },
+              frame: "group",
+            },
             data: [
               {
                 name: "timeline_data_unfiltered",
@@ -1252,6 +1261,7 @@
             },
             title: {
               text: "Monthly distribution of sightings",
+              fontSize: { value: 20 },
               frame: "group",
             },
             data: [],
@@ -1407,10 +1417,11 @@
             },
             title: {
               text: "Sightings based on select time-of-day keywords",
+              fontSize: { value: 20 },
               frame: "group",
-              subtitleFontSize: 6,
+              subtitleFontSize: { value: 15 },
               subtitle: [
-                "Keywords are found by analysing reports and may not accurately indicate which times of the day sightings occur",
+                "Keywords are found by word frequency analysis of the written reports.",
               ],
             },
             data: [],
@@ -1443,7 +1454,7 @@
                     y: { field: { group: "height" }, mult: 0.5 },
                     startAngle: { field: "startAngle" },
                     endAngle: { field: "endAngle" },
-                    innerRadius: { value: 10 },
+                    innerRadius: { value: 25 },
                     outerRadius: {
                       scale: "r",
                       field: "no_of_reports_containing_word",
