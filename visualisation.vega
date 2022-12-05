@@ -304,7 +304,7 @@
     },
     {
       "name": "Map_style", "value": "states",
-      "bind": {"name": "Map style", "input": "select", "options": ["states", "counties"]}
+      "bind": {"name": "Map style", "input": "radio", "options": ["states", "counties"]}
     },
     {
       "name": "Display_points", 
@@ -368,7 +368,8 @@
           "titleFontWeight": {"value": "normal"},
           "labelFontSize": 10,
           "shape": "shape",
-          "fill": "color"
+          "fill": "color",
+          "orient": "left"
         },
         {
           "title": "No. of sightings",
@@ -376,7 +377,8 @@
           "titleFontWeight": {"value": "normal"},
           "labelFontSize": {"value": 10},
           "stroke": "sightings",
-          "labelSeparation": 45
+          "labelSeparation": 45,
+          "orient": "left"
         }
       ],
       "scales": [
@@ -998,7 +1000,7 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"value": 1530},
+          "x": {"value": 1500},
           "y": {"value": 80},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
@@ -1151,18 +1153,18 @@
       "align": "right",
       "encode": {
         "update": {
-          "x": {"value": 1530},
+          "x": {"value": 1500},
           "y": {"value": 740},
           "width": {"signal": "monthly_width"},
           "height": {"signal": "monthly_height"}
         }
       },
       "title": {
-        "text": "Sightings based on select time-of-day keywords",
+        "text": "Sightings by Time-of-Day Keywords",
         "fontSize": {"value": 20},
         "frame": "group",
         "subtitleFontSize": {"value": 15},
-        "subtitle": ["Keywords are found by word frequency analysis of the written reports."]
+        "subtitle": ["Keywords are counted found by word frequency analysis of the written reports."]
       },
       "data": [
         

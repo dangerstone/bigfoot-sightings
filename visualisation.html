@@ -11,8 +11,8 @@
       }
       .vega-bindings {
         position: absolute;
-        left: 70px;
-        top: 70px;
+        left: 135px;
+        top: 85px;
         display: flex;
         gap: 10px;
         font-family: sans-serif;
@@ -71,7 +71,7 @@
           },
           {
             name: "data_source",
-            url: "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/data-wrangling/data/bfro_reports_geocoded.csv",
+            url: "https://raw.githubusercontent.com/dangerstone/bigfoot-sightings/main/data/bfro_reports_geocoded.csv",
             format: {
               type: "csv",
               parse: {
@@ -482,13 +482,13 @@
             value: "states",
             bind: {
               name: "Map style",
-              input: "select",
+              input: "radio",
               options: ["states", "counties"],
             },
           },
           {
             name: "Display_points",
-            value: true,
+            value: false,
             bind: { name: "Display points", input: "checkbox" },
           },
           { name: "map_height", value: 800 },
@@ -527,7 +527,7 @@
               },
             },
             title: {
-              text: "Map of sightings",
+              text: "Map of Sightings",
               frame: "group",
               fontSize: { value: 20 },
             },
@@ -537,18 +537,20 @@
               {
                 title: "Classification",
                 titleFontSize: 15,
-                titleFontWeight: { value: "bold" },
+                titleFontWeight: { value: "normal" },
                 labelFontSize: 10,
                 shape: "shape",
                 fill: "color",
+                orient: "left",
               },
               {
                 title: "No. of sightings",
                 titleFontSize: { value: 15 },
-                titleFontWeight: { value: "bold" },
+                titleFontWeight: { value: "normal" },
                 labelFontSize: { value: 10 },
                 stroke: "sightings",
                 labelSeparation: 45,
+                orient: "left",
               },
             ],
             scales: [
@@ -667,6 +669,8 @@
                       signal:
                         "{'title': datum.title, 'Classification': datum.classification, 'Date': utcFormat(datum.date,'%B %d, %Y'), 'State': datum.state, 'County': datum.county, 'Weather': datum.weather_summary, 'Conditions': datum.time_and_conditions, 'Location': datum.location_details}",
                     },
+                    stroke: { value: "#b5b4d5" },
+                    strokeWidth: { value: 0.25 },
                   },
                   update: {
                     fill: { scale: "color", field: "classification" },
@@ -759,14 +763,14 @@
             encode: {
               update: {
                 x: { value: 1 },
-                y: { value: 930 },
+                y: { value: 950 },
                 width: { signal: "timeline_width" },
                 height: { signal: "timeline_height" },
               },
             },
             title: {
               text: "Timeline of sightings",
-              fontSize: { value: 25 },
+              fontSize: { value: 20 },
               frame: "group",
             },
             data: [
@@ -779,7 +783,6 @@
                   delimiter: ",",
                 },
                 transform: [
-                  { type: "filter", expr: "datum.date >= 0" },
                   {
                     field: "date",
                     type: "timeunit",
@@ -804,7 +807,6 @@
                   delimiter: ",",
                 },
                 transform: [
-                  { type: "filter", expr: "datum.date >= 0" },
                   {
                     field: "date",
                     type: "timeunit",
@@ -1254,13 +1256,13 @@
             encode: {
               update: {
                 x: { value: 1500 },
-                y: { value: 1 },
+                y: { value: 80 },
                 width: { signal: "monthly_width" },
                 height: { signal: "monthly_height" },
               },
             },
             title: {
-              text: "Monthly distribution of sightings",
+              text: "Sightings by Month",
               fontSize: { value: 20 },
               frame: "group",
             },
@@ -1410,18 +1412,18 @@
             encode: {
               update: {
                 x: { value: 1500 },
-                y: { value: 630 },
+                y: { value: 740 },
                 width: { signal: "monthly_width" },
                 height: { signal: "monthly_height" },
               },
             },
             title: {
-              text: "Sightings based on select time-of-day keywords",
+              text: "Sightings by Time-of-Day Keywords",
               fontSize: { value: 20 },
               frame: "group",
               subtitleFontSize: { value: 15 },
               subtitle: [
-                "Keywords are found by word frequency analysis of the written reports.",
+                "Keywords are counted found by word frequency analysis of the written reports.",
               ],
             },
             data: [],
