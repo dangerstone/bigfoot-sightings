@@ -6,12 +6,12 @@
   "background": "white",
 
   "title": {
-    "text": "Bigfoot Sightings in North America",
+    "text": "Bigfoot Sightings in the US",
     "encode": {
       "title": {
         "enter": {
           "fill": {"value": "darkgreen"},
-          "fontSize": {"value": 25}
+          "fontSize": {"value": 40}
         }
       }
     }
@@ -310,7 +310,7 @@
     },
     {
       "name": "Map_style", "value": "states",
-      "bind": {"name": "Map style", "input": "radio", "options": ["states", "counties"]}
+      "bind": {"name": "Map style", "input": "select", "options": ["states", "counties"]}
     },
     {
       "name": "Display_points", 
@@ -362,13 +362,18 @@
       },
       "title": {
         "text": "Map of sightings",
-        "frame": "group"
+        "frame": "group",
+        "fontSize": {"value": 20},
+        //"color": {"value": "darkgreen"}
       },
       "data": [        ],
       "projections": [        ],
       "legends": [
         {
           "title": "Classification",
+          "titleFontSize": 15,
+          "titleFontWeight": {"value": "bold"},
+          "labelFontSize": 10,
           //"size": "size",
           //"stroke": "color",
           "shape": "shape",
@@ -377,6 +382,9 @@
         },
         {
           "title": "No. of sightings",
+          "titleFontSize": {"value": 15},
+          "titleFontWeight": {"value": "bold"},
+          "labelFontSize": {"value": 10},
           "stroke": "sightings",
           "labelSeparation": 45//,
           //"orient":"left"
@@ -551,6 +559,7 @@
       },
       "title": {
         "text": "Timeline of sightings",
+        "fontSize": {"value": 25},
         "frame": "group"
       },
 
@@ -1017,6 +1026,7 @@
       },
       "title": {
         "text": "Monthly distribution of sightings",
+        "fontSize": {"value": 20},
         "frame": "group"
       }, 
       "data": [
@@ -1104,7 +1114,7 @@
             "fill": {"value": "#000"},
             "align": {"value": "center"},
             "baseline": {"value": "middle"},
-            "text":  {"field": "month_name"} // TRANSLATE TO ACTUAL MONTH
+            "text":  {"field": "month_name"} 
           }
         }
       }
@@ -1169,9 +1179,10 @@
       },
       "title": {
         "text": "Sightings based on select time-of-day keywords",
+        "fontSize": {"value": 20},
         "frame": "group",
-        "subtitleFontSize": 6,
-        "subtitle": ["Keywords are found by analysing reports and may not accurately indicate which times of the day sightings occur"]
+        "subtitleFontSize": {"value": 15},
+        "subtitle": ["Keywords are found by word frequency analysis of the written reports."]
       },
       "data": [
         
@@ -1202,7 +1213,7 @@
               "y": {"field": {"group": "height"}, "mult": 0.5},
               "startAngle": {"field": "startAngle"},
               "endAngle": {"field": "endAngle"},
-              "innerRadius": {"value": 10},
+              "innerRadius": {"value": 25},
               "outerRadius": {"scale": "r", "field": "no_of_reports_containing_word"},
               "stroke": {"value": "#fff"},
               "tooltip": {"signal": "{'Sightings': datum.no_of_reports_containing_word}"}
